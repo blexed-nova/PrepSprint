@@ -67,41 +67,124 @@
         <p style="text-align:center; color:#a0aec0; font-style: italic;">Choose your subject and difficulty to begin your sprint.</p>
     </div>
 </div>
-
-<script>
-    // --- CONSOLIDATED ENGINEERING DATABASE ---
-    const db = {
-        maths: {
+// --- FULL ENGINEERING MCQ & FLASHCARD DATABASE ---
+const db = {
+    maths: {
+        flashcards: {
             Basic: { q: "What is the derivative of e^x?", a: "The derivative of e^x is always e^x." },
-            Medium: { q: "Define a Unit Matrix (Identity Matrix).", a: "A square matrix in which all the elements of the principal diagonal are ones and all other elements are zeros." },
+            Medium: { q: "Define a Unit Matrix (Identity Matrix).", a: "A square matrix where the main diagonal is 1s and others are 0s." },
             Hard: { q: "What is the condition for a vector field to be Solenoidal?", a: "Its divergence must be zero (∇ · V = 0)." }
         },
-        physics: {
+        mcqs: [
+            { q: "What is the value of ∫ cos(x) dx?", options: ["sin(x) + C", "-sin(x) + C", "tan(x)", "cos(x)"], correct: 0, exp: "The integral of cosine is sine." }
+        ]
+    },
+    physics: {
+        flashcards: {
             Basic: { q: "What is the SI unit of Luminous Intensity?", a: "Candela (cd)." },
-            Medium: { q: "Explain Hooke's Law.", a: "Stress is directly proportional to strain within the elastic limit (σ = Eε)." },
-            Hard: { q: "What is the significance of the Brewster's Angle?", a: "It is the angle of incidence at which light with a particular polarization is perfectly transmitted through a transparent dielectric surface." }
+            Medium: { q: "Explain Hooke's Law.", a: "Stress is directly proportional to strain (σ = Eε)." },
+            Hard: { q: "What is Brewster's Angle?", a: "The angle where light with a certain polarization is perfectly transmitted." }
         },
-        chemistry: {
-            Basic: { q: "What is the pH of a neutral solution at 25°C?", a: "7.0" },
-            Medium: { q: "What is 'Temporary Hardness' of water caused by?", a: "Dissolved bicarbonate minerals (calcium bicarbonate and magnesium bicarbonate)." },
-            Hard: { q: "Define the term 'Octane Number' in fuels.", a: "A measure of a fuel's ability to resist 'knocking' or 'pinging' during combustion in an internal combustion engine." }
+        mcqs: [
+            { q: "Which of the following is a scalar quantity?", options: ["Force", "Velocity", "Acceleration", "Energy"], correct: 3, exp: "Energy has magnitude but no direction." }
+        ]
+    },
+    electronics: {
+        flashcards: {
+            Basic: { q: "What does LED stand for?", a: "Light Emitting Diode." },
+            Medium: { q: "What is a Rectifier?", a: "A circuit that converts AC to DC." },
+            Hard: { q: "What is Zener Breakdown?", a: "Reverse-bias tunneling of electrons due to high electric fields." }
         },
-        electronics: {
-            Basic: { q: "What is the full form of KVL?", a: "Kirchhoff's Voltage Law." },
-            Medium: { q: "What is the purpose of a Rectifier?", a: "To convert Alternating Current (AC) into Direct Current (DC)." },
-            Hard: { q: "Explain 'Zener Breakdown'.", a: "A type of electrical breakdown that occurs in a reverse-biased p-n junction diode when the electric field enables tunneling of electrons from the valence to the conduction band." }
+        mcqs: [
+            { q: "In a P-type semiconductor, the majority charge carriers are:", options: ["Electrons", "Holes", "Neutrons", "Protons"], correct: 1, exp: "P-type (Positive) is created by adding trivalent impurities, creating holes." }
+        ]
+    },
+    mechanical: {
+        flashcards: {
+            Basic: { q: "What is the SI unit of Power?", a: "Watt (W)." },
+            Medium: { q: "What is a Strut?", a: "A structural component designed to resist longitudinal compression." },
+            Hard: { q: "Define the Carnot Cycle.", a: "The most efficient theoretical thermodynamic cycle." }
         },
-        mechanical: {
-            Basic: { q: "What is the unit of Power in SI?", a: "Watt (W), which is 1 Joule per second." },
-            Medium: { q: "What is the difference between a Strut and a Column?", a: "A column is always vertical and subjected to axial compressive loads, while a strut can be inclined or horizontal." },
-            Hard: { q: "Define the 'Carnot Cycle'.", a: "An ideal theoretical thermodynamic cycle that provides the maximum possible efficiency for a heat engine." }
-        },
-        evs: {
-            Basic: { q: "What is the full form of 'BOD' in water testing?", a: "Biochemical Oxygen Demand." },
-            Medium: { q: "What is the 'Albedo Effect'?", a: "The measure of how much light that hits a surface is reflected without being absorbed (Ice has high albedo)." },
-            Hard: { q: "Explain 'Bioaccumulation'.", a: "The gradual accumulation of substances, such as pesticides or other chemicals, in an organism." }
-        },
-        comm_skills: {
-            Basic: { q: "What is 'Kinesics'?", a: "The study of body movements, gestures, and facial expressions as a form of non-verbal communication." },
-            Medium: { q: "What is 'Active Listening'?", a: "A communication technique that requires the listener to fully concentrate, understand, respond, and then remember what is being said." },
-            Hard: { q: "Define 'Paralanguage'.", a: "The non-lexical component of communication by speech, for example intonation, pitch and speed of speaking, hesitation
+        mcqs: [
+            { q: "Which law of thermodynamics defines the concept of temperature?", options: ["First", "Second", "Third", "Zeroth"], correct: 3, exp: "The Zeroth Law states that if two systems are in equilibrium with a third, they are in equilibrium with each other." }
+        ]
+    }
+};
+
+let currentMCQ = null;
+
+// --- LOGIC ---
+
+function showFlashcard() {
+    const sub = document.getElementById("subject").value;
+    const lvl = document.getElementById("level").value;
+    const data = db[sub] ? db[sub].flashcards[lvl] : {q: "More questions coming!", a: "Stay tuned."};
+
+    document.getElementById("output").innerHTML = `
+        <span class="card-header">${sub.toUpperCase()} | ${lvl.toUpperCase()}</span>
+        <h2 style="margin: 10px 0; color: #2d3748;">${data.q}</h2>
+        <button style="background:#42b72a; margin-top:15px;" onclick="showAns('${data.a.replace(/'/g, "\\'")}')">View Solution</button>
+    `;
+}
+
+function showAns(ans) {
+    const existing = document.querySelector('.answer-box');
+    if (existing) existing.remove();
+    document.getElementById("output").innerHTML += `<div class="answer-box"><strong>Solution:</strong><br>${ans}</div>`;
+}
+
+function showMCQ() {
+    const sub = document.getElementById("subject").value;
+    const pool = db[sub] ? db[sub].mcqs : db['maths'].mcqs; // Default to maths if sub empty
+    currentMCQ = pool[Math.floor(Math.random() * pool.length)];
+    
+    let optionsHTML = "";
+    currentMCQ.options.forEach((opt, i) => {
+        optionsHTML += `<label class="mcq-option"><input type="radio" name="mcq" value="${i}"> ${opt}</label>`;
+    });
+
+    document.getElementById("output").innerHTML = `
+        <span class="card-header">${sub.toUpperCase()} MCQ</span>
+        <p style="font-size: 1.1em; font-weight: 500; margin: 10px 0;">${currentMCQ.q}</p>
+        <div style="margin: 15px 0;">${optionsHTML}</div>
+        <button onclick="submitMCQ()">Submit Answer</button>
+        <div id="feedback"></div>
+    `;
+}
+
+function submitMCQ() {
+    const selected = document.querySelector('input[name="mcq"]:checked');
+    const feedback = document.getElementById("feedback");
+    if (!selected) return;
+
+    if (parseInt(selected.value) === currentMCQ.correct) {
+        feedback.innerHTML = `<p class="feedback-correct">✅ Correct!</p><p style="font-size:0.9em; color:#4a5568;">${currentMCQ.exp}</p>`;
+    } else {
+        feedback.innerHTML = `<p class="feedback-wrong">❌ Incorrect. The answer was: ${currentMCQ.options[currentMCQ.correct]}</p>`;
+    }
+}
+
+function showTough() {
+    document.getElementById("output").innerHTML = `
+        <div style="text-align:center;">
+            <span class="card-header" style="color:#e74c3c;">TOUGH MODE (PYQ)</span>
+            <p style="font-size:1.1em; font-weight:500;">Mechanical Eng: A pump lifts 500kg of water to a height of 10m in 5 seconds. What is the power in kW? (Use g=10)</p>
+            <input type="number" id="ansIn" style="padding:12px; width:100px; border-radius:8px; border:1px solid #ccc; margin-top:10px;" placeholder="Value">
+            <button onclick="checkTough(10)" style="background:#e74c3c;">Submit</button>
+            <p id="tFeedback" style="margin-top:15px; font-weight:bold;"></p>
+        </div>
+    `;
+}
+
+function checkTough(correct) {
+    const val = document.getElementById("ansIn").value;
+    const f = document.getElementById("tFeedback");
+    if(parseInt(val) === correct) {
+        f.innerHTML = "✅ LEGEND! P = (mgh)/t = (500*10*10)/5 = 10,000W = 10kW.";
+        f.style.color = "#2ecc71";
+    } else {
+        f.innerHTML = "❌ Try again! Formula: Power = (m*g*h) / time";
+        f.style.color = "#e74c3c";
+    }
+}
+</script>
