@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>PrepSprint - Smart Exam Practice</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+    <h1>PrepSprint 🚀</h1>
+    <p>Smart practice for every college student</p>
+
+    <hr>
+
+    <!-- Selection Area -->
+    <label>Choose Stream:</label>
+    <select id="stream">
+        <option>Engineering</option>
+        <option>Science</option>
+        <option>Arts</option>
+        <option>Physical Education</option>
+        <option>Other</option>
+    </select>
+
+    <br><br>
+
+    <label>Choose Difficulty:</label>
+    <select id="level">
+        <option>Basic</option>
+        <option>Medium</option>
+        <option>Hard</option>
+    </select>
+
+    <br><br>
+
+    <!-- Action Buttons -->
+    <button onclick="showFlashcard()">Flashcard</button>
+    <button onclick="showMCQ()">MCQ</button>
+    <button onclick="showTough()">Tough Question</button>
+
+    <hr>
+
+    <!-- Output Area -->
+    <div id="output">
+        <p>Your question will appear here.</p>
+    </div>
+
+    <!-- JavaScript goes here -->
+    <script>
+        function showFlashcard() {
+            document.getElementById("output").innerHTML = "Flashcard coming soon...";
+        }
+
+        function showMCQ() {
+            document.getElementById("output").innerHTML = "MCQ coming soon...";
+        }
+
+        function showTough() {
+            document.getElementById("output").innerHTML = "Tough question coming soon...";
+        }
+    </script>
+
+</body>
+</html>
