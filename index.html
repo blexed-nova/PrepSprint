@@ -14,11 +14,13 @@
         .actions { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; margin-bottom: 30px; }
         button { cursor: pointer; padding: 15px; border: none; border-radius: 12px; background-color: var(--primary); color: white; font-weight: 600; transition: 0.3s; text-transform: lowercase; }
         #output { min-height: 250px; border: 2px dashed #444; padding: 30px; border-radius: 15px; background: rgba(0,0,0,0.03); display: flex; flex-direction: column; justify-content: center; }
-        .ai-lab { margin-top: 30px; padding: 20px; border: 1px solid var(--accent); border-radius: 15px; background: rgba(142, 68, 173, 0.05); }
+        .ai-lab, .leaderboard { margin-top: 30px; padding: 20px; border: 1px solid var(--accent); border-radius: 15px; background: rgba(142, 68, 173, 0.05); }
         .drop-zone { border: 2px dashed var(--accent); padding: 20px; text-align: center; border-radius: 10px; cursor: pointer; }
         .loading-bar-container { width: 100%; background: #444; height: 6px; border-radius: 3px; margin-top: 15px; display: none; overflow: hidden; }
         .loading-bar { width: 0%; height: 100%; background: var(--accent); transition: width 0.4s; }
         .ai-response-box { white-space: pre-wrap; font-size: 0.95em; background: rgba(0,0,0,0.2); padding: 20px; border-radius: 12px; margin-top: 15px; border-left: 5px solid var(--accent); line-height: 1.6; text-transform: lowercase; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; text-transform: lowercase; }
+        th, td { text-align: left; padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.1); }
     </style>
 </head>
 <body class="dark-mode">
@@ -64,10 +66,20 @@
             </div>
         </div>
     </div>
+
+    <div class="leaderboard">
+        <h3 style="text-transform: lowercase;">🏆 pilot standings</h3>
+        <table id="leaderTable">
+            <thead>
+                <tr><th>rank</th><th>pilot</th><th>xp</th></tr>
+            </thead>
+            <tbody id="leaderBody">
+                </tbody>
+        </table>
+    </div>
 </div>
 
 <script>
-    // your api key named 'speedy' from the 'speed' project
     const GEMINI_API_KEY = "AIzaSyADGmn2NYSUBD0ZBL9Pk9vD0hpul6UaY4Y";
     let state = { name: "", score: 0, streak: 1, rank: "rookie", lastSeen: "" };
 
@@ -95,8 +107,25 @@
         document.getElementById('scoreDisplay').innerText = state.score;
         document.getElementById('streakDisplay').innerText = state.streak;
         if(state.score > 500) state.rank = "specialist";
+        if(state.score > 1000) state.rank = "grandmaster";
         document.getElementById('rankDisplay').innerText = state.rank;
         localStorage.setItem('prepsprint_pro', JSON.stringify(state));
+        updateLeaderboard();
+    }
+
+    function updateLeaderboard() {
+        let players = [
+            { name: "bolt", xp: 850 },
+            { name: "ace", xp: 420 },
+            { name: "shadow", xp: 150 },
+            { name: state.name || "you", xp: state.score }
+        ];
+        players.sort((a, b) => b.xp - a.xp);
+        let html = "";
+        players.forEach((p, i) => {
+            html += `<tr><td>${i+1}</td><td>${p.name}</td><td>${p.xp}</td></tr>`;
+        });
+        document.getElementById('leaderBody').innerHTML = html;
     }
 
     async function handleAIUpload() {
@@ -117,42 +146,48 @@
         reader.onload = async () => {
             const base64Data = reader.result.split(',')[1];
             
-            try {
-                // using the stable gemini 1.5 flash model
-                const url = `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
-                
-                const response = await fetch(url, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        contents: [{
-                            parts: [
-                                { text: "tutor mode: read this file and generate one engineering mcq with 4 options and the answer. all text in lowercase." },
-                                { inline_data: { mime_type: file.type || "image/jpeg", data: base64Data } }
-                            ]
-                        }]
-                    })
-                });
+            // try v1 first, then v1beta fallback
+            const urls = [
+                "https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent",
+                "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent"
+            ];
 
-                const result = await response.json();
-                
-                if (result.error) throw new Error(result.error.message);
+            let success = false;
+            for (let url of urls) {
+                if(success) break;
+                try {
+                    const response = await fetch(`${url}?key=${GEMINI_API_KEY}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            contents: [{
+                                parts: [
+                                    { text: "tutor: read file and make one engineering mcq. small letters." },
+                                    { inline_data: { mime_type: file.type || "image/jpeg", data: base64Data } }
+                                ]
+                            }]
+                        })
+                    });
+                    const result = await response.json();
+                    if (result.candidates) {
+                        const aiOutput = result.candidates[0].content.parts[0].text.toLowerCase();
+                        bar.style.width = "100%";
+                        success = true;
+                        setTimeout(() => {
+                            textArea.innerText = "✅ speedy analysis complete";
+                            barContainer.style.display = "none";
+                            document.getElementById('output').innerHTML = `
+                                <div class="ai-response-box">${aiOutput}</div>
+                                <button style="margin-top:10px; width:100%; background:var(--success);" onclick="state.score+=50; refreshUI();">solved (+50 xp)</button>
+                            `;
+                        }, 600);
+                    }
+                } catch (e) { console.warn("retrying next endpoint..."); }
+            }
 
-                const aiOutput = result.candidates[0].content.parts[0].text.toLowerCase();
-                bar.style.width = "100%";
-
-                setTimeout(() => {
-                    textArea.innerText = "✅ speedy analysis complete";
-                    barContainer.style.display = "none";
-                    document.getElementById('output').innerHTML = `
-                        <div class="ai-response-box">${aiOutput}</div>
-                        <button style="margin-top:10px; width:100%; background:var(--success);" onclick="state.score+=50; refreshUI();">solved (+50 xp)</button>
-                    `;
-                }, 600);
-
-            } catch (err) {
-                textArea.innerText = "❌ sync failed. check cloud console.";
-                alert("error: " + err.message.toLowerCase());
+            if (!success) {
+                textArea.innerText = "❌ sync failed. is the api enabled?";
+                alert("neural sync: please wait 1 more minute for the 'speed' project to finish activating on google's cloud.");
                 barContainer.style.display = "none";
             }
         };
@@ -160,9 +195,9 @@
 
     function showMode(type) {
         let out = document.getElementById('output');
-        if(type === 'flash') out.innerHTML = "<h3>flashcard</h3><p>si unit of energy?</p><button onclick='state.score+=5; refreshUI();'>joule (j)</button>";
-        else if(type === 'mcq') out.innerHTML = "<h3>mcq</h3><p>p=vi is?</p><button onclick='state.score+=10; refreshUI();'>power formula</button>";
-        else if(type === 'tough') out.innerHTML = "<h3>tough mode</h3><p>p=vi. v=100, i=2. power?</p><input id='tAns'><button onclick='if(tAns.value==200){state.score+=100; refreshUI();}'>check</button>";
+        if(type === 'flash') out.innerHTML = "<h3>flashcard</h3><p>si unit of force?</p><button onclick='state.score+=5; refreshUI();'>newton (n)</button>";
+        else if(type === 'mcq') out.innerHTML = "<h3>mcq</h3><p>v=ir is?</p><button onclick='state.score+=10; refreshUI();'>ohm's law</button>";
+        else if(type === 'tough') out.innerHTML = "<h3>tough mode</h3><p>p=vi. v=240, i=0.5. power?</p><input id='tAns'><button onclick='if(tAns.value==120){state.score+=100; refreshUI();}'>check</button>";
     }
 
     function toggleTheme() { document.body.classList.toggle('dark-mode'); }
