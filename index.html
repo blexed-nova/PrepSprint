@@ -46,49 +46,47 @@
     </div>
 
     <!-- JavaScript goes here -->
-    <script>
-        <script>
+      <script>
     const flashcards = {
         Basic: [
-            { q: "What is the meaning of GPA?", a: "GPA stands for Grade Point Average. It represents your academic performance." },
-            { q: "What is active learning?", a: "Active learning involves engaging with the material through questions, practice, and discussion." },
-            { q: "Why is revision important?", a: "Revision helps strengthen memory and improves exam performance." }
+            { q: "What is the meaning of GPA?", a: "GPA stands for Grade Point Average." },
+            { q: "What is active learning?", a: "Learning by doing, questioning, and practicing." }
         ],
         Medium: [
-            { q: "Why is understanding concepts better than memorization?", a: "Understanding allows you to apply knowledge to new and unseen questions." },
-            { q: "How does spaced repetition help in studying?", a: "It improves long-term retention by revisiting topics at increasing intervals." }
+            { q: "Why is understanding better than memorization?", a: "Because understanding helps apply concepts in new questions." }
         ],
         Hard: [
-            { q: "Why do students forget studied topics during exams?", a: "Due to stress, lack of revision, and poor recall practice." },
-            { q: "How can active recall outperform rereading notes?", a: "It forces the brain to retrieve information, strengthening memory connections." }
+            { q: "Why do students forget during exams?", a: "Due to stress, poor revision, and weak recall practice." }
         ]
     };
 
     function showFlashcard() {
         const level = document.getElementById("level").value;
         const cards = flashcards[level];
-        const randomCard = cards[Math.floor(Math.random() * cards.length)];
+        const card = cards[Math.floor(Math.random() * cards.length)];
 
         document.getElementById("output").innerHTML = `
             <h3>Flashcard (${level})</h3>
-            <p><strong>Question:</strong> ${randomCard.q}</p>
-            <button onclick="showAnswer('${randomCard.a}')">Show Answer</button>
+            <p><strong>Question:</strong> ${card.q}</p>
+            <button onclick="showAnswer('${card.a}')">Show Answer</button>
         `;
     }
 
     function showAnswer(answer) {
         document.getElementById("output").innerHTML += `
             <p><strong>Answer:</strong> ${answer}</p>
-            <p><em>Keep going. You're learning faster than you think.</em></p>
+            <p><em>Keep going. You're doing better than you think.</em></p>
         `;
     }
 
     function showMCQ() {
-        document.getElementById("output").innerHTML = "MCQs coming next step...";
+        document.getElementById("output").innerHTML =
+            "<p>MCQs coming next step 🚧</p>";
     }
 
     function showTough() {
-        document.getElementById("output").innerHTML = "Tough questions coming next step...";
+        document.getElementById("output").innerHTML =
+            "<p>Tough questions coming next step 😈</p>";
     }
 </script>
 </body>
