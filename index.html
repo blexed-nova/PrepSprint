@@ -2,9 +2,10 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>PrepSprint - Smart Exam Practice</title>
+  <title>PrepSprint 🚀</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
+
 <body>
 
 <h1>PrepSprint 🚀</h1>
@@ -18,7 +19,6 @@
   <option>Science</option>
   <option>Arts</option>
   <option>Physical Education</option>
-  <option>Other</option>
 </select>
 
 <br><br>
@@ -42,18 +42,20 @@
   <p>Your question will appear here.</p>
 </div>
 
+<!-- ✅ ALL JAVASCRIPT STARTS HERE -->
 <script>
-// ---------- FLASHCARDS ----------
+
+// FLASHCARDS
 const flashcards = {
   Basic: [
-    { q: "What is GPA?", a: "GPA stands for Grade Point Average." },
-    { q: "What is active learning?", a: "Learning by doing, questioning, and practicing." }
+    { q: "What is GPA?", a: "Grade Point Average." },
+    { q: "What is active learning?", a: "Learning by doing and practicing." }
   ],
   Medium: [
-    { q: "Why is understanding better than memorization?", a: "It allows application in new problems." }
+    { q: "Why is understanding important?", a: "It helps apply concepts." }
   ],
   Hard: [
-    { q: "Why do students forget in exams?", a: "Stress and weak recall practice." }
+    { q: "Why do students forget in exams?", a: "Stress and weak recall." }
   ]
 };
 
@@ -63,38 +65,31 @@ function showFlashcard() {
 
   document.getElementById("output").innerHTML = `
     <h3>Flashcard (${level})</h3>
-    <p><strong>Question:</strong> ${card.q}</p>
+    <p><b>Question:</b> ${card.q}</p>
     <button onclick="showAnswer('${card.a}')">Show Answer</button>
   `;
 }
 
 function showAnswer(ans) {
   document.getElementById("output").innerHTML += `
-    <p><strong>Answer:</strong> ${ans}</p>
+    <p><b>Answer:</b> ${ans}</p>
     <em>Keep going. You're doing better than you think.</em>
   `;
 }
 
-// ---------- MCQs ----------
+// MCQs
 const mcqs = [
   {
-    question: "Which technique improves long-term memory the most?",
-    options: ["Reading", "Highlighting", "Active Recall", "Rewriting"],
-    answer: 2,
-    explanation: "Active recall strengthens memory by retrieval."
-  },
-  {
-    question: "Best way to understand a concept?",
-    options: ["Memorizing", "Teaching others", "Reading once", "Skipping hard parts"],
-    answer: 1,
-    explanation: "Teaching exposes gaps and reinforces learning."
+    question: "Which method improves memory most?",
+    options: ["Reading", "Highlighting", "Active Recall", "Copying"],
+    answer: 2
   }
 ];
 
 let currentMCQ;
 
 function showMCQ() {
-  currentMCQ = mcqs[Math.floor(Math.random() * mcqs.length)];
+  currentMCQ = mcqs[0];
 
   document.getElementById("output").innerHTML = `
     <h3>MCQ</h3>
@@ -112,30 +107,19 @@ function showMCQ() {
 
 function submitMCQ() {
   const selected = document.querySelector('input[name="opt"]:checked');
-  const result = document.getElementById("result");
-
-  if (!selected) {
-    result.innerText = "Please select an option.";
-    return;
-  }
-
-  if (parseInt(selected.value) === currentMCQ.answer) {
-    result.innerHTML = "✅ Correct!<br>" + currentMCQ.explanation +
-      "<br><strong>You're ahead of most.</strong>";
-  } else {
-    result.innerHTML = "❌ Wrong.<br>Correct Answer: " +
-      currentMCQ.options[currentMCQ.answer] +
-      "<br>" + currentMCQ.explanation +
-      "<br><strong>Failure is feedback.</strong>";
-  }
+  document.getElementById("result").innerText =
+    selected && parseInt(selected.value) === currentMCQ.answer
+    ? "✅ Correct!"
+    : "❌ Wrong. Keep practicing.";
 }
 
-// ---------- TOUGH ----------
 function showTough() {
   document.getElementById("output").innerHTML =
-    "<p>😈 Tough questions coming soon. This will separate toppers.</p>";
+    "<p>😈 Tough questions coming soon.</p>";
 }
+
 </script>
+<!-- ✅ JAVASCRIPT ENDS HERE -->
 
 </body>
 </html>
