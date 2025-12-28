@@ -2,235 +2,172 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>PrepSprint 🚀 - Engineering Excellence</title>
+    <title>PrepSprint Pro 🚀</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        :root { 
-            --primary: #1877f2; 
-            --bg: #f0f2f5; 
-            --card-bg: #ffffff;
-            --text: #1c1e21; 
-            --success: #2ecc71; 
-            --danger: #e74c3c; 
-        }
-
-        /* DARK MODE COLORS */
-        body.dark-mode {
-            --bg: #18191a;
-            --card-bg: #242526;
-            --text: #e4e6eb;
-        }
-
-        body { font-family: 'Segoe UI', Arial, sans-serif; padding: 20px; line-height: 1.6; background-color: var(--bg); color: var(--text); max-width: 850px; margin: auto; transition: 0.3s; }
+        :root { --primary: #1877f2; --bg: #f0f2f5; --card-bg: #ffffff; --text: #1c1e21; --success: #2ecc71; --danger: #e74c3c; }
+        body.dark-mode { --bg: #18191a; --card-bg: #242526; --text: #e4e6eb; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; padding: 20px; background-color: var(--bg); color: var(--text); max-width: 850px; margin: auto; transition: 0.3s; }
+        
         .container { background: var(--card-bg); padding: 30px; border-radius: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); position: relative; }
-        h1 { color: var(--primary); text-align: center; margin-bottom: 5px; }
-        .tagline { color: #606770; text-align: center; margin-bottom: 30px; font-weight: 500; }
         
-        #scoreBoard { position: absolute; top: 20px; right: 20px; background: var(--primary); color: white; padding: 8px 15px; border-radius: 20px; font-weight: bold; }
-        
-        /* DARK MODE TOGGLE */
-        .theme-toggle { position: absolute; top: 20px; left: 20px; cursor: pointer; background: #ddd; border-radius: 20px; padding: 5px 10px; font-size: 0.8em; border: none; }
-        body.dark-mode .theme-toggle { background: #444; color: white; }
+        /* HEADER & STATS */
+        .header-stats { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; background: rgba(24, 119, 242, 0.1); padding: 15px; border-radius: 12px; }
+        .user-rank { color: var(--primary); font-weight: bold; font-size: 1.1em; }
+        .streak-fire { color: #ff9d00; font-weight: bold; }
 
-        .controls { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 25px; }
-        .control-group { display: flex; flex-direction: column; }
-        label { font-weight: bold; font-size: 0.8em; color: var(--primary); margin-bottom: 5px; }
-        select { padding: 12px; border-radius: 10px; border: 1.5px solid #ddd; outline: none; background: var(--card-bg); color: var(--text); }
+        /* AUTH MODAL */
+        #authOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: flex; justify-content: center; align-items: center; z-index: 100; }
+        .auth-box { background: var(--card-bg); padding: 40px; border-radius: 20px; text-align: center; width: 300px; }
         
+        .controls { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 25px; }
         .actions { display: flex; justify-content: center; gap: 10px; margin-bottom: 30px; flex-wrap: wrap; }
         button { cursor: pointer; padding: 12px 20px; border: none; border-radius: 10px; background-color: var(--primary); color: white; font-weight: 600; transition: 0.2s; }
-        button:hover { background-color: #1166d8; transform: translateY(-1px); }
         
         #output { min-height: 220px; border: 2px dashed #cbd5e0; padding: 30px; border-radius: 15px; background: rgba(0,0,0,0.02); }
-        .card-header { font-size: 0.8em; font-weight: bold; color: var(--primary); margin-bottom: 15px; display: block; text-transform: uppercase; border-bottom: 1px solid #eee; padding-bottom: 5px; }
-        .answer-box { margin-top: 15px; padding: 15px; background: rgba(24, 119, 242, 0.1); border-radius: 10px; border-left: 6px solid var(--primary); }
-        .mcq-option { display: block; background: var(--card-bg); padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 8px; cursor: pointer; }
-        .mcq-option:hover { border-color: var(--primary); background: rgba(24, 119, 242, 0.05); }
+        .upload-section { margin-top: 20px; border-top: 1px solid #ddd; padding-top: 20px; text-align: center; }
+        input[type="file"] { margin: 10px 0; }
     </style>
 </head>
-<body>
+<body class="dark-mode"> <div id="authOverlay">
+    <div class="auth-box">
+        <h2>Welcome to PrepSprint</h2>
+        <p>Create your profile to save progress</p>
+        <input type="text" id="userName" placeholder="Your Name" style="width: 100%; padding: 10px; margin-bottom: 15px; border-radius: 5px; border: 1px solid #ddd;">
+        <button onclick="saveProfile()" style="width: 100%;">Start Sprinting 🚀</button>
+    </div>
+</div>
 
 <div class="container">
-    <button class="theme-toggle" onclick="toggleTheme()">🌓 Toggle Dark Mode</button>
-    <div id="scoreBoard">🏆 Score: 0</div>
-    <h1>PrepSprint 🚀</h1>
-    <p class="tagline">Engineering & Applied Sciences Practice Portal</p>
-
-    <div class="controls">
-        <div class="control-group">
-            <label>SUBJECT</label>
-            <select id="subject">
-                <option value="maths">Engineering Maths</option>
-                <option value="physics">Applied Physics</option>
-                <option value="chemistry">Engineering Chemistry</option>
-                <option value="electronics">Basic Electronics</option>
-                <option value="electrical">Electrical Engineering</option>
-                <option value="mechanical">Mechanical Engineering</option>
-                <option value="evs">Environmental Science</option>
-                <option value="comm">Communication Skills</option>
-            </select>
+    <div class="header-stats">
+        <div>
+            <span id="displayName" class="user-rank">User</span> | 
+            <span id="displayRank" style="color: var(--success);">Rookie</span>
         </div>
-        <div class="control-group">
-            <label>DIFFICULTY</label>
-            <select id="level">
-                <option value="Basic">Basic (Concepts)</option>
-                <option value="Medium">Medium (Application)</option>
-                <option value="Hard">Hard (Problem Solving)</option>
-            </select>
+        <div>
+            <span class="streak-fire">🔥 <span id="streakCount">0</span> Days</span> | 
+            <span style="font-weight: bold;">🏆 <span id="scoreVal">0</span></span>
         </div>
     </div>
 
+    <h1>PrepSprint Pro</h1>
     <div class="actions">
         <button onclick="showFlashcard()">🔥 Flashcard</button>
         <button onclick="showMCQ()">🎯 MCQ</button>
-        <button onclick="showTough()">😈 Tough Question</button>
+        <button onclick="showTough()">😈 Tough Mode</button>
+        <button onclick="toggleTheme()" style="background: #444;">🌓 Theme</button>
     </div>
 
     <div id="output">
-        <p style="text-align:center; color:#888;">Pick your subject and start your sprint!</p>
+        <p style="text-align:center;">Practice to earn points and rank up!</p>
+    </div>
+
+    <div class="upload-section">
+        <label>🧪 <strong>AI Question Lab (Phase 3 Beta)</strong></label><br>
+        <small>Upload Notes/PDF for AI generation</small><br>
+        <input type="file" id="pdfUpload" disabled>
+        <button style="background: #8e44ad;" onclick="alert('In Phase 3, we connect the AI API here!')">Generate from File</button>
     </div>
 </div>
 
 <script>
-    function toggleTheme() {
-        document.body.classList.toggle('dark-mode');
-    }
+    let user = { name: "", score: 0, streak: 0, lastDate: "", rank: "Rookie" };
 
-    // --- DATABASE ---
-    const db = {
-        maths: {
-            Basic: [{q: "Derivative of sin(x)?", a: "cos(x)"}, {q: "Derivative of e^x?", a: "e^x"}],
-            Medium: [{q: "Integral of 1/x?", a: "log(x) + C"}],
-            Hard: [{q: "Condition for Solenoidal vector?", a: "∇·V = 0"}],
-            mcqs: [
-                { q: "Value of log(1)?", options: ["1", "e", "0", "10"], correct: 2 },
-                { q: "Derivative of tan(x)?", options: ["sec(x)", "sec²(x)", "cos(x)", "sin(x)"], correct: 1 }
-            ]
-        },
-        physics: {
-            Basic: [{q: "SI unit of Force?", a: "Newton (N)"}],
-            Medium: [{q: "Hooke's Law formula?", a: "Stress ∝ Strain (F = kx)"}],
-            Hard: [{q: "What is Brewster's Angle?", a: "Angle for perfect polarization."}],
-            mcqs: [{ q: "Which is a vector?", options: ["Mass", "Time", "Force", "Length"], correct: 2 }]
-        },
-        mechanical: {
-            Basic: [{q: "Unit of Energy?", a: "Joule (J)"}],
-            Medium: [{q: "What is a Strut?", a: "A member resisting compression."}],
-            Hard: [{q: "Efficiency of Carnot Engine?", a: "η = 1 - (T_lower / T_higher)"}],
-            mcqs: [{ q: "Which is a scalar?", options: ["Weight", "Force", "Work", "Acceleration"], correct: 2 }]
-        },
-        // (Other subjects remain the same in database)
-        electronics: { Basic: [{q: "KVL?", a: "Kirchhoff's Voltage Law"}], Medium: [{q: "Rectifier?", a: "AC to DC"}], Hard: [{q: "BJT α?", a: "Ic/Ie"}], mcqs: [{ q: "Majority carriers in N-type?", options: ["Holes", "Protons", "Electrons", "Neutrons"], correct: 2 }] },
-        electrical: { Basic: [{q: "Resistance?", a: "Ohm (Ω)"}], Medium: [{q: "Flux?", a: "Weber (Wb)"}], Hard: [{q: "Power Factor?", a: "Real/Apparent Power"}], mcqs: [{ q: "Measure current?", options: ["Voltmeter", "Ammeter", "Galvanometer", "Wattmeter"], correct: 1 }] },
-        chemistry: { Basic: [{q: "pH water?", a: "7.0"}], Medium: [{q: "Hardness?", a: "Bicarbonates"}], Hard: [{q: "Octane #?", a: "Knock resistance"}], mcqs: [{ q: "Atmosphere gas?", options: ["Oxygen", "CO2", "Nitrogen", "Hydrogen"], correct: 2 }] },
-        evs: { Basic: [{q: "BOD?", a: "Biochemical Oxygen Demand"}], Medium: [{q: "Ecosystem?", a: "Interaction of life and environment"}], Hard: [{q: "Bio-accumulation?", a: "Toxin buildup"}], mcqs: [{ q: "Greenhouse gas?", options: ["CO2", "Oxygen", "Argon", "Helium"], correct: 0 }] },
-        comm: { Basic: [{q: "Kinesics?", a: "Body language"}], Medium: [{q: "Barrier?", a: "Obstacle to understanding"}], Hard: [{q: "Proxemics?", a: "Space in communication"}], mcqs: [{ q: "Non-verbal?", options: ["Emails", "Letters", "Expressions", "Calls"], correct: 2 }] }
+    // --- INITIALIZE FROM STORAGE ---
+    window.onload = function() {
+        const saved = localStorage.getItem('prepsprint_user');
+        if (saved) {
+            user = JSON.parse(saved);
+            document.getElementById('authOverlay').style.display = 'none';
+            checkStreak();
+            updateUI();
+        }
     };
 
-    let score = 0;
-    let timerId = null;
-    let currentMCQ = null;
+    function saveProfile() {
+        const name = document.getElementById('userName').value;
+        if (!name) return alert("Enter a name!");
+        user.name = name;
+        user.lastDate = new Date().toDateString();
+        user.streak = 1;
+        localStorage.setItem('prepsprint_user', JSON.stringify(user));
+        document.getElementById('authOverlay').style.display = 'none';
+        updateUI();
+    }
+
+    function checkStreak() {
+        const today = new Date().toDateString();
+        const yesterday = new Date(Date.now() - 86400000).toDateString();
+        
+        if (user.lastDate === yesterday) {
+            user.streak++;
+            user.lastDate = today;
+        } else if (user.lastDate !== today) {
+            user.streak = 1;
+            user.lastDate = today;
+        }
+        saveData();
+    }
+
+    function updateUI() {
+        document.getElementById('displayName').innerText = user.name;
+        document.getElementById('scoreVal').innerText = user.score;
+        document.getElementById('streakCount').innerText = user.streak;
+        
+        // Ranking Logic
+        if (user.score > 500) user.rank = "Legend";
+        else if (user.score > 200) user.rank = "Master";
+        else if (user.score > 50) user.rank = "Scholar";
+        document.getElementById('displayRank').innerText = user.rank;
+    }
+
+    function saveData() {
+        localStorage.setItem('prepsprint_user', JSON.stringify(user));
+        updateUI();
+    }
 
     function updatePoints(pts) {
-        score += pts;
-        document.getElementById("scoreBoard").innerText = `🏆 Score: ${score}`;
+        user.score += pts;
+        saveData();
     }
 
+    function toggleTheme() { document.body.classList.toggle('dark-mode'); }
+
+    // --- GAME LOGIC (Simplified for Demo) ---
     function showFlashcard() {
-        clearInterval(timerId);
-        const sub = document.getElementById("subject").value;
-        const lvl = document.getElementById("level").value;
-        const pool = db[sub][lvl];
-        const card = pool[Math.floor(Math.random() * pool.length)];
-
         document.getElementById("output").innerHTML = `
-            <span class="card-header">${sub} | ${lvl}</span>
-            <h2>${card.q}</h2>
-            <button onclick="showAns('${card.a}')">View Solution</button>
-        `;
+            <div style="text-align:center;">
+                <h3>What is the 2nd Law of Thermodynamics?</h3>
+                <button onclick="revealAns()">Show Answer</button>
+            </div>`;
     }
 
-    function showAns(ans) {
-        if (!document.querySelector('.answer-box')) {
-            document.getElementById("output").innerHTML += `<div class="answer-box"><strong>Solution:</strong><br>${ans}</div>`;
-            updatePoints(5);
-        }
+    function revealAns() {
+        document.getElementById("output").innerHTML += `
+            <div class="answer-box">Entropy of an isolated system always increases. (+5 pts)</div>`;
+        updatePoints(5);
     }
 
     function showMCQ() {
-        clearInterval(timerId);
-        const sub = document.getElementById("subject").value;
-        const pool = db[sub].mcqs;
-        currentMCQ = pool[Math.floor(Math.random() * pool.length)];
-        
-        let opts = "";
-        currentMCQ.options.forEach((o, i) => {
-            opts += `<label class="mcq-option"><input type="radio" name="mcq" value="${i}"> ${o}</label>`;
-        });
-
-        document.getElementById("output").innerHTML = `
-            <span class="card-header">${sub} MCQ</span>
-            <p style="font-weight:500;">${currentMCQ.q}</p>
-            <div>${opts}</div>
-            <button id="submitBtn" onclick="submitMCQ()">Submit Answer</button>
-            <div id="feedback"></div>
-        `;
+        document.getElementById("output").innerHTML = `<h3>MCQ: Which is a vector?</h3>
+            <button onclick="correctMCQ()">Force</button> <button onclick="wrongMCQ()">Mass</button>`;
     }
 
-    function submitMCQ() {
-        const sel = document.querySelector('input[name="mcq"]:checked');
-        const f = document.getElementById("feedback");
-        const btn = document.getElementById("submitBtn");
-        if (!sel || btn.disabled) return;
-
-        btn.disabled = true;
-        if (parseInt(sel.value) === currentMCQ.correct) {
-            f.innerHTML = "<p style='color:var(--success); font-weight:bold;'>✅ Correct! +10 Points</p>";
-            updatePoints(10);
-        } else {
-            f.innerHTML = `<p style='color:var(--danger); font-weight:bold;'>❌ Incorrect. Correct: ${currentMCQ.options[currentMCQ.correct]}</p>`;
-        }
+    function correctMCQ() {
+        document.getElementById("output").innerHTML = "<h2 style='color:var(--success)'>✅ +10 Points!</h2>";
+        updatePoints(10);
     }
+    
+    function wrongMCQ() { alert("Wrong! Try again."); }
 
     function showTough() {
-        clearInterval(timerId);
-        let timeLeft = 30;
-        document.getElementById("output").innerHTML = `
-            <div style="text-align:center;">
-                <span class="card-header" style="color:var(--danger);">TOUGH MODE</span>
-                <h2 id="timerDisplay" style="color:var(--danger);">30s</h2>
-                <p>Mechanical: A Carnot engine operates between 600K and 300K. What is its efficiency η?</p>
-                
-
-[Image of Carnot cycle temperature-entropy diagram]
-
-                <input type="text" id="ansIn" style="padding:10px; width:100px; border-radius:8px; border:1px solid #ccc; background: var(--card-bg); color: var(--text);" placeholder="e.g. 0.5">
-                <button onclick="checkTough(0.5)">Check</button>
-                <p id="tFeedback" style="margin-top:10px; font-weight:bold;"></p>
-            </div>
-        `;
-
-        timerId = setInterval(() => {
-            timeLeft--;
-            document.getElementById("timerDisplay").innerText = timeLeft + "s";
-            if (timeLeft <= 0) {
-                clearInterval(timerId);
-                document.getElementById("output").innerHTML = `<h2 style="color:var(--danger);">⌛ Time's Up!</h2><button onclick="showTough()">Try Again</button>`;
-            }
-        }, 1000);
+        document.getElementById("output").innerHTML = "<h3>😈 Tough Mode</h3><p>Calculate V if I=2A, R=10Ω</p><input id='ans' type='number'><button onclick='checkT(20)'>Submit</button>";
     }
 
-    function checkTough(corr) {
-        const val = parseFloat(document.getElementById("ansIn").value);
-        const f = document.getElementById("tFeedback");
-        if (val === corr) {
-            clearInterval(timerId);
-            f.innerHTML = "✅ GENIUS! η = 1 - (300/600) = 0.5 (50%). +50 Points!";
-            f.style.color = "var(--success)";
+    function checkT(c) {
+        if(parseInt(document.getElementById('ans').value) === c) {
             updatePoints(50);
-        } else {
-            f.innerHTML = "❌ Wrong! η = 1 - (T_low / T_high).";
-            f.style.color = "var(--danger)";
+            document.getElementById("output").innerHTML = "<h2>✅ LEGEND! +50 Pts</h2>";
         }
     }
 </script>
