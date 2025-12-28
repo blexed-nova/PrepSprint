@@ -10,21 +10,19 @@
         .container { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
         h1 { color: var(--primary); margin-bottom: 5px; text-align: center; font-size: 2.2em; }
         .tagline { color: #606770; margin-bottom: 30px; text-align: center; font-weight: 500; }
-        
         .controls { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 25px; }
         .control-group { display: flex; flex-direction: column; }
         label { font-weight: bold; font-size: 0.85em; margin-bottom: 8px; color: var(--primary); text-transform: uppercase; letter-spacing: 1px; }
         select { padding: 14px; border-radius: 10px; border: 1.5px solid #ddd; background: #fff; font-size: 1em; outline: none; transition: 0.3s; }
         select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(24, 119, 242, 0.2); }
-
-        .actions { display: flex; justify-content: center; gap: 15px; margin-bottom: 30px; }
+        .actions { display: flex; justify-content: center; gap: 15px; margin-bottom: 30px; flex-wrap: wrap; }
         button { cursor: pointer; padding: 14px 25px; border: none; border-radius: 10px; background-color: var(--primary); color: white; font-weight: 600; font-size: 1em; transition: 0.3s; }
         button:hover { background-color: #1166d8; transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        
         #output { min-height: 200px; border: 2px dashed #cbd5e0; padding: 30px; border-radius: 15px; background: #fafbfc; position: relative; }
         .card-header { font-size: 0.8em; font-weight: bold; color: var(--primary); margin-bottom: 10px; display: block; }
         .answer-box { margin-top: 20px; padding: 15px; background: #e7f3ff; border-radius: 10px; border-left: 6px solid var(--primary); animation: slideIn 0.3s ease-out; }
-        
+        .mcq-option { display: block; background: white; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 8px; cursor: pointer; transition: 0.2s; }
+        .mcq-option:hover { border-color: var(--primary); background: #f0f7ff; }
         @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
@@ -60,6 +58,7 @@
 
     <div class="actions">
         <button onclick="showFlashcard()">🔥 Flashcard</button>
+        <button onclick="showMCQ()">🎯 MCQ</button>
         <button onclick="showTough()">😈 Tough Question</button>
     </div>
 
@@ -67,124 +66,122 @@
         <p style="text-align:center; color:#a0aec0; font-style: italic;">Choose your subject and difficulty to begin your sprint.</p>
     </div>
 </div>
-// --- FULL ENGINEERING MCQ & FLASHCARD DATABASE ---
-const db = {
-    maths: {
-        flashcards: {
+
+<script>
+    const db = {
+        maths: {
             Basic: { q: "What is the derivative of e^x?", a: "The derivative of e^x is always e^x." },
             Medium: { q: "Define a Unit Matrix (Identity Matrix).", a: "A square matrix where the main diagonal is 1s and others are 0s." },
-            Hard: { q: "What is the condition for a vector field to be Solenoidal?", a: "Its divergence must be zero (∇ · V = 0)." }
+            Hard: { q: "What is the condition for a vector field to be Solenoidal?", a: "Its divergence must be zero (∇ · V = 0)." },
+            mcqs: [{ q: "Value of log(1)?", options: ["1", "e", "0", "10"], correct: 2 }]
         },
-        mcqs: [
-            { q: "What is the value of ∫ cos(x) dx?", options: ["sin(x) + C", "-sin(x) + C", "tan(x)", "cos(x)"], correct: 0, exp: "The integral of cosine is sine." }
-        ]
-    },
-    physics: {
-        flashcards: {
+        physics: {
             Basic: { q: "What is the SI unit of Luminous Intensity?", a: "Candela (cd)." },
             Medium: { q: "Explain Hooke's Law.", a: "Stress is directly proportional to strain (σ = Eε)." },
-            Hard: { q: "What is Brewster's Angle?", a: "The angle where light with a certain polarization is perfectly transmitted." }
+            Hard: { q: "What is Brewster's Angle?", a: "The angle where polarized light is perfectly transmitted." },
+            mcqs: [{ q: "Which is a vector?", options: ["Mass", "Time", "Force", "Length"], correct: 2 }]
         },
-        mcqs: [
-            { q: "Which of the following is a scalar quantity?", options: ["Force", "Velocity", "Acceleration", "Energy"], correct: 3, exp: "Energy has magnitude but no direction." }
-        ]
-    },
-    electronics: {
-        flashcards: {
-            Basic: { q: "What does LED stand for?", a: "Light Emitting Diode." },
-            Medium: { q: "What is a Rectifier?", a: "A circuit that converts AC to DC." },
-            Hard: { q: "What is Zener Breakdown?", a: "Reverse-bias tunneling of electrons due to high electric fields." }
+        electrical: {
+            Basic: { q: "What is the unit of Conductance?", a: "Siemens (S) or mho." },
+            Medium: { q: "State Lenz's Law.", a: "The direction of induced current opposes the change in magnetic flux that produced it." },
+            Hard: { q: "What is the Power Factor?", a: "The ratio of Real Power (W) to Apparent Power (VA)." },
+            mcqs: [{ q: "Unit of Magnetic Flux?", options: ["Tesla", "Weber", "Henry", "Farad"], correct: 1 }]
         },
-        mcqs: [
-            { q: "In a P-type semiconductor, the majority charge carriers are:", options: ["Electrons", "Holes", "Neutrons", "Protons"], correct: 1, exp: "P-type (Positive) is created by adding trivalent impurities, creating holes." }
-        ]
-    },
-    mechanical: {
-        flashcards: {
-            Basic: { q: "What is the SI unit of Power?", a: "Watt (W)." },
-            Medium: { q: "What is a Strut?", a: "A structural component designed to resist longitudinal compression." },
-            Hard: { q: "Define the Carnot Cycle.", a: "The most efficient theoretical thermodynamic cycle." }
+        electronics: {
+            Basic: { q: "What is KVL?", a: "Kirchhoff's Voltage Law: Sum of voltages in a loop is zero." },
+            Medium: { q: "What does a Zener Diode do?", a: "It allows current to flow backwards when a certain reverse voltage is reached." },
+            Hard: { q: "Define Alpha in a transistor.", a: "The ratio of Collector current to Emitter current." },
+            mcqs: [{ q: "Majority carriers in N-type?", options: ["Holes", "Protons", "Electrons", "Neutrons"], correct: 2 }]
         },
-        mcqs: [
-            { q: "Which law of thermodynamics defines the concept of temperature?", options: ["First", "Second", "Third", "Zeroth"], correct: 3, exp: "The Zeroth Law states that if two systems are in equilibrium with a third, they are in equilibrium with each other." }
-        ]
+        mechanical: {
+            Basic: { q: "Unit of Power?", a: "Watt (W)." },
+            Medium: { q: "What is a Strut?", a: "A member resisting compression." },
+            Hard: { q: "What is the Carnot Cycle?", a: "The most efficient theoretical cycle." },
+            mcqs: [{ q: "Which is a scalar?", options: ["Force", "Work", "Velocity", "Weight"], correct: 1 }]
+        },
+        evs: {
+            Basic: { q: "What is BOD?", a: "Biochemical Oxygen Demand." },
+            Medium: { q: "What is Albedo?", a: "Reflection coefficient of a surface." },
+            Hard: { q: "What is Bioaccumulation?", a: "Toxin buildup in an organism." },
+            mcqs: [{ q: "Main Greenhouse gas?", options: ["Oxygen", "CO2", "Nitrogen", "Argon"], correct: 1 }]
+        },
+        chemistry: {
+            Basic: { q: "pH of pure water?", a: "7" },
+            Medium: { q: "Causes Temporary Hardness?", a: "Calcium/Magnesium Bicarbonates." },
+            Hard: { q: "What is Octane Number?", a: "Fuel's resistance to knocking." },
+            mcqs: [{ q: "Which is an isotope of Hydrogen?", options: ["Helium", "Deuterium", "Lithium", "Neon"], correct: 1 }]
+        },
+        comm_skills: {
+            Basic: { q: "What is Kinesics?", a: "Study of body language." },
+            Medium: { q: "What is Active Listening?", a: "Fully concentrating on the speaker." },
+            Hard: { q: "What is Paralanguage?", a: "Non-lexical speech parts (tone, pitch)." },
+            mcqs: [{ q: "Type of non-verbal comm?", options: ["Email", "Facial Expression", "Letter", "Text"], correct: 1 }]
+        }
+    };
+
+    let currentMCQ = null;
+
+    function showFlashcard() {
+        const sub = document.getElementById("subject").value;
+        const lvl = document.getElementById("level").value;
+        const data = db[sub][lvl];
+        document.getElementById("output").innerHTML = `
+            <span class="card-header">${sub.toUpperCase()} | ${lvl.toUpperCase()}</span>
+            <h2>${data.q}</h2>
+            <button onclick="showAns('${data.a}')">View Solution</button>
+        `;
     }
-};
 
-let currentMCQ = null;
-
-// --- LOGIC ---
-
-function showFlashcard() {
-    const sub = document.getElementById("subject").value;
-    const lvl = document.getElementById("level").value;
-    const data = db[sub] ? db[sub].flashcards[lvl] : {q: "More questions coming!", a: "Stay tuned."};
-
-    document.getElementById("output").innerHTML = `
-        <span class="card-header">${sub.toUpperCase()} | ${lvl.toUpperCase()}</span>
-        <h2 style="margin: 10px 0; color: #2d3748;">${data.q}</h2>
-        <button style="background:#42b72a; margin-top:15px;" onclick="showAns('${data.a.replace(/'/g, "\\'")}')">View Solution</button>
-    `;
-}
-
-function showAns(ans) {
-    const existing = document.querySelector('.answer-box');
-    if (existing) existing.remove();
-    document.getElementById("output").innerHTML += `<div class="answer-box"><strong>Solution:</strong><br>${ans}</div>`;
-}
-
-function showMCQ() {
-    const sub = document.getElementById("subject").value;
-    const pool = db[sub] ? db[sub].mcqs : db['maths'].mcqs; // Default to maths if sub empty
-    currentMCQ = pool[Math.floor(Math.random() * pool.length)];
-    
-    let optionsHTML = "";
-    currentMCQ.options.forEach((opt, i) => {
-        optionsHTML += `<label class="mcq-option"><input type="radio" name="mcq" value="${i}"> ${opt}</label>`;
-    });
-
-    document.getElementById("output").innerHTML = `
-        <span class="card-header">${sub.toUpperCase()} MCQ</span>
-        <p style="font-size: 1.1em; font-weight: 500; margin: 10px 0;">${currentMCQ.q}</p>
-        <div style="margin: 15px 0;">${optionsHTML}</div>
-        <button onclick="submitMCQ()">Submit Answer</button>
-        <div id="feedback"></div>
-    `;
-}
-
-function submitMCQ() {
-    const selected = document.querySelector('input[name="mcq"]:checked');
-    const feedback = document.getElementById("feedback");
-    if (!selected) return;
-
-    if (parseInt(selected.value) === currentMCQ.correct) {
-        feedback.innerHTML = `<p class="feedback-correct">✅ Correct!</p><p style="font-size:0.9em; color:#4a5568;">${currentMCQ.exp}</p>`;
-    } else {
-        feedback.innerHTML = `<p class="feedback-wrong">❌ Incorrect. The answer was: ${currentMCQ.options[currentMCQ.correct]}</p>`;
+    function showAns(ans) {
+        if (!document.querySelector('.answer-box')) {
+            document.getElementById("output").innerHTML += `<div class="answer-box"><strong>Solution:</strong><br>${ans}</div>`;
+        }
     }
-}
 
-function showTough() {
-    document.getElementById("output").innerHTML = `
-        <div style="text-align:center;">
-            <span class="card-header" style="color:#e74c3c;">TOUGH MODE (PYQ)</span>
-            <p style="font-size:1.1em; font-weight:500;">Mechanical Eng: A pump lifts 500kg of water to a height of 10m in 5 seconds. What is the power in kW? (Use g=10)</p>
-            <input type="number" id="ansIn" style="padding:12px; width:100px; border-radius:8px; border:1px solid #ccc; margin-top:10px;" placeholder="Value">
-            <button onclick="checkTough(10)" style="background:#e74c3c;">Submit</button>
-            <p id="tFeedback" style="margin-top:15px; font-weight:bold;"></p>
-        </div>
-    `;
-}
-
-function checkTough(correct) {
-    const val = document.getElementById("ansIn").value;
-    const f = document.getElementById("tFeedback");
-    if(parseInt(val) === correct) {
-        f.innerHTML = "✅ LEGEND! P = (mgh)/t = (500*10*10)/5 = 10,000W = 10kW.";
-        f.style.color = "#2ecc71";
-    } else {
-        f.innerHTML = "❌ Try again! Formula: Power = (m*g*h) / time";
-        f.style.color = "#e74c3c";
+    function showMCQ() {
+        const sub = document.getElementById("subject").value;
+        currentMCQ = db[sub].mcqs[0];
+        let opts = "";
+        currentMCQ.options.forEach((o, i) => {
+            opts += `<label class="mcq-option"><input type="radio" name="mcq" value="${i}"> ${o}</label>`;
+        });
+        document.getElementById("output").innerHTML = `
+            <span class="card-header">${sub.toUpperCase()} MCQ</span>
+            <p>${currentMCQ.q}</p>
+            ${opts}
+            <button onclick="submitMCQ()">Submit</button>
+            <div id="feedback"></div>
+        `;
     }
-}
+
+    function submitMCQ() {
+        const sel = document.querySelector('input[name="mcq"]:checked');
+        const f = document.getElementById("feedback");
+        if (!sel) return;
+        if (parseInt(sel.value) === currentMCQ.correct) {
+            f.innerHTML = "<p style='color:green;'>✅ Correct!</p>";
+        } else {
+            f.innerHTML = `<p style='color:red;'>❌ Wrong. Correct: ${currentMCQ.options[currentMCQ.correct]}</p>`;
+        }
+    }
+
+    function showTough() {
+        document.getElementById("output").innerHTML = `
+            <div style="text-align:center;">
+                <span class="card-header" style="color:#e74c3c;">TOUGH MODE</span>
+                <p>Electrical: Find Resistance if V=240V and I=2A.</p>
+                <input type="number" id="ansIn" style="padding:10px; width:80px;" placeholder="Ohms">
+                <button onclick="check(120)">Check</button>
+                <p id="fdb"></p>
+            </div>
+        `;
+    }
+
+    function check(corr) {
+        const val = document.getElementById("ansIn").value;
+        document.getElementById("fdb").innerHTML = parseInt(val) === corr ? "✅ Legend!" : "❌ Try again (V/I)";
+    }
 </script>
+
+</body>
+</html>
