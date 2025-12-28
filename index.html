@@ -2,161 +2,236 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>PrepSprint 🚀</title>
+    <title>PrepSprint - Smart Exam Practice</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        body { font-family: sans-serif; padding: 20px; line-height: 1.6; }
-        #output { border: 1px solid #ddd; padding: 15px; margin-top: 20px; border-radius: 8px; background: #fefefe; }
-        button { cursor: pointer; padding: 8px 12px; margin-right: 5px; }
+        /* MODERN PROFESSIONAL DESIGN */
+        body { 
+            font-family: 'Segoe UI', Arial, sans-serif; 
+            padding: 20px; 
+            line-height: 1.6; 
+            background-color: #f0f2f5; 
+            color: #1c1e21;
+            max-width: 700px;
+            margin: auto;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        h1 { color: #1877f2; margin-bottom: 5px; }
+        .tagline { color: #606770; margin-bottom: 25px; font-size: 0.9em; }
+        
+        .controls { 
+            display: flex; 
+            gap: 15px; 
+            margin-bottom: 20px; 
+            flex-wrap: wrap;
+        }
+        .control-group { display: flex; flex-direction: column; }
+        
+        select { 
+            padding: 10px; 
+            border-radius: 8px; 
+            border: 1px solid #ddd;
+            background: #fff;
+        }
+
+        .actions { margin: 20px 0; }
+        
+        button { 
+            cursor: pointer; 
+            padding: 12px 20px; 
+            margin: 5px; 
+            border: none; 
+            border-radius: 8px; 
+            background-color: #1877f2; 
+            color: white; 
+            font-weight: 600;
+            transition: 0.2s;
+        }
+        button:hover { background-color: #166fe5; transform: scale(1.02); }
+        button:active { transform: scale(0.98); }
+
+        #output { 
+            min-height: 150px;
+            border: 2px solid #e4e6eb; 
+            padding: 20px; 
+            margin-top: 20px; 
+            border-radius: 12px; 
+            background: #f9fafb; 
+        }
+
+        .mcq-option {
+            display: block;
+            background: white;
+            padding: 12px;
+            margin: 8px 0;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        .mcq-option:hover { background: #f0f2f5; }
+
+        .feedback-correct { color: #2ecc71; font-weight: bold; margin-top: 10px; }
+        .feedback-wrong { color: #e74c3c; font-weight: bold; margin-top: 10px; }
     </style>
 </head>
 <body>
 
+<div class="container">
     <h1>PrepSprint 🚀</h1>
-    <p>Smart practice for every college student</p>
+    <p class="tagline">The ultimate practice tool for college excellence.</p>
 
-    <hr>
-
-    <label>Choose Stream:</label>
-    <select id="stream">
-        <option>Engineering</option>
-        <option>Science</option>
-        <option>Arts</option>
-        <option>Physical Education</option>
-    </select>
-
-    <br><br>
-
-    <label>Choose Difficulty:</label>
-    <select id="level">
-        <option value="Basic">Basic</option>
-        <option value="Medium">Medium</option>
-        <option value="Hard">Hard</option>
-    </select>
-
-    <br><br>
-
-    <button onclick="showFlashcard()">Flashcard</button>
-    <button onclick="showMCQ()">MCQ</button>
-    <button onclick="showTough()">Tough Question</button>
-
-    <hr>
-
-    <div id="output">
-        <p>Your question will appear here.</p>
+    <div class="controls">
+        <div class="control-group">
+            <label>Stream</label>
+            <select id="stream">
+                <option>Engineering</option>
+                <option>Science</option>
+                <option>Arts</option>
+                <option>Commerce</option>
+            </select>
+        </div>
+        <div class="control-group">
+            <label>Difficulty</label>
+            <select id="level">
+                <option value="Basic">Basic</option>
+                <option value="Medium">Medium</option>
+                <option value="Hard">Hard</option>
+            </select>
+        </div>
     </div>
 
-    <script>
-    // FLASHCARDS DATA
+    <div class="actions">
+        <button onclick="showFlashcard()">🔥 Flashcard</button>
+        <button onclick="showMCQ()">🎯 MCQ</button>
+        <button onclick="showTough()">😈 Tough Mode</button>
+    </div>
+
+    <div id="output">
+        <p style="color: #888;">Select a mode above to start practicing...</p>
+    </div>
+</div>
+
+<script>
+    // --- DATABASE ---
     const flashcards = {
         Basic: [
-            { q: "What is GPA?", a: "Grade Point Average." },
-            { q: "What is active learning?", a: "Learning by doing and practicing." }
+            { q: "What is GPA?", a: "Grade Point Average - a measure of academic achievement." },
+            { q: "What is Active Recall?", a: "Testing yourself to pull information out of your brain." },
+            { q: "What is a 'Credit Hour'?", a: "A unit that measures the amount of effort required for a course." }
         ],
         Medium: [
-            { q: "Why is understanding important?", a: "It helps apply concepts." }
+            { q: "What is the Pomodoro Technique?", a: "Studying for 25 minutes followed by a 5-minute break." },
+            { q: "Why is sleep vital for exams?", a: "Sleep consolidates memory and clears brain toxins." }
         ],
         Hard: [
-            { q: "Why do students forget in exams?", a: "Stress and weak recall." }
+            { q: "What is the Ebbinghaus Forgetting Curve?", a: "A formula describing how information is lost over time when there is no attempt to retain it." },
+            { q: "Explain the Feynman Technique.", a: "Learning a concept by explaining it in simple terms as if to a child." }
         ]
     };
 
-    // MCQs DATABASE
-const mcqs = [
-  {
-    question: "Which technique improves long-term memory the most?",
-    options: ["Reading", "Highlighting", "Active Recall", "Rewriting"],
-    answer: 2
-  },
-  {
-    question: "In the 'Feynman Technique', what is the best way to learn?",
-    options: ["Listen to music", "Teach it to a child", "Read faster", "Sleep more"],
-    answer: 1
-  },
-  {
-    question: "What does 'Spaced Repetition' prevent?",
-    options: ["High Grades", "The Forgetting Curve", "Hunger", "Fast Reading"],
-    answer: 1
-  },
-  {
-    question: "Which is a 'Deep Work' habit?",
-    options: ["Checking Email", "Multitasking", "Zero Distractions", "Group Chatting"],
-    answer: 2
-  }
-];
+    const mcqs = [
+        {
+            q: "Which method is scientifically proven to be most effective for long-term memory?",
+            options: ["Re-reading notes", "Highlighting text", "Active Recall", "Summarizing"],
+            correct: 2,
+            exp: "Active Recall forces the brain to retrieve info, creating stronger neural pathways."
+        },
+        {
+            q: "How often should you take a break during deep study sessions?",
+            options: ["Every 4 hours", "Every 25-50 minutes", "Never until finished", "Every 5 minutes"],
+            correct: 1,
+            exp: "The brain loses focus after 50 minutes; short breaks reset your attention span."
+        },
+        {
+            q: "What is the best way to handle 'Exam Anxiety'?",
+            options: ["Cramming all night", "Deep breathing and practice", "Eating sugar", "Skipping the exam"],
+            correct: 1,
+            exp: "Preparation and physical relaxation techniques lower cortisol levels."
+        }
+    ];
 
-// Updated showMCQ to pick a RANDOM question
-function showMCQ() {
-  // This line picks a random question from the list above
-  currentMCQ = mcqs[Math.floor(Math.random() * mcqs.length)];
+    let currentMCQ = null;
 
-  document.getElementById("output").innerHTML = `
-    <h3>MCQ</h3>
-    <p>${currentMCQ.question}</p>
-    <label><input type="radio" name="opt" value="0"> ${currentMCQ.options[0]}</label><br>
-    <label><input type="radio" name="opt" value="1"> ${currentMCQ.options[1]}</label><br>
-    <label><input type="radio" name="opt" value="2"> ${currentMCQ.options[2]}</label><br>
-    <label><input type="radio" name="opt" value="3"> ${currentMCQ.options[3]}</label><br><br>
-    <button onclick="submitMCQ()">Submit</button>
-    <p id="result"></p>
-  `;
-}
-
-    let currentMCQ;
+    // --- LOGIC ---
 
     function showFlashcard() {
         const level = document.getElementById("level").value;
-        const levelCards = flashcards[level];
-        const card = levelCards[Math.floor(Math.random() * levelCards.length)];
+        const pool = flashcards[level];
+        const card = pool[Math.floor(Math.random() * pool.length)];
 
         document.getElementById("output").innerHTML = `
-            <h3>Flashcard (${level})</h3>
-            <p><b>Question:</b> ${card.q}</p>
-            <button onclick="showAnswer('${card.a}')">Show Answer</button>
+            <div style="text-align:center;">
+                <small style="color:#1877f2; font-weight:bold;">FLASHCARD: ${level.toUpperCase()}</small>
+                <h2 style="margin: 15px 0;">${card.q}</h2>
+                <button style="background:#42b72a;" onclick="showAnswer('${card.a}')">Show Answer</button>
+            </div>
         `;
     }
 
     function showAnswer(ans) {
-        document.getElementById("output").innerHTML += `
-            <p><b>Answer:</b> ${ans}</p>
-            <em>Keep going. You're doing better than you think.</em>
+        const out = document.getElementById("output");
+        out.innerHTML += `
+            <div style="margin-top:20px; padding:15px; background:#e7f3ff; border-radius:8px;">
+                <strong>Answer:</strong> ${ans}
+            </div>
+            <p style="text-align:center; font-size:0.8em; color:gray; margin-top:10px;">Keep going! Consistency is key.</p>
         `;
     }
 
     function showMCQ() {
-        currentMCQ = mcqs[0];
+        currentMCQ = mcqs[Math.floor(Math.random() * mcqs.length)];
+        
+        let optionsHTML = "";
+        currentMCQ.options.forEach((opt, i) => {
+            optionsHTML += `
+                <label class="mcq-option">
+                    <input type="radio" name="mcq" value="${i}"> ${opt}
+                </label>
+            `;
+        });
+
         document.getElementById("output").innerHTML = `
-            <h3>MCQ</h3>
-            <p>${currentMCQ.question}</p>
-            <label><input type="radio" name="opt" value="0"> ${currentMCQ.options[0]}</label><br>
-            <label><input type="radio" name="opt" value="1"> ${currentMCQ.options[1]}</label><br>
-            <label><input type="radio" name="opt" value="2"> ${currentMCQ.options[2]}</label><br>
-            <label><input type="radio" name="opt" value="3"> ${currentMCQ.options[3]}</label><br><br>
-            <button onclick="submitMCQ()">Submit</button>
-            <p id="result"></p>
+            <h3>Multiple Choice Question</h3>
+            <p style="font-size: 1.1em; font-weight: 500;">${currentMCQ.q}</p>
+            <div style="margin: 15px 0;">${optionsHTML}</div>
+            <button onclick="submitMCQ()">Submit Answer</button>
+            <div id="feedback"></div>
         `;
     }
 
     function submitMCQ() {
-        const selected = document.querySelector('input[name="opt"]:checked');
-        const resultArea = document.getElementById("result");
-        
+        const selected = document.querySelector('input[name="mcq"]:checked');
+        const feedback = document.getElementById("feedback");
+
         if (!selected) {
-            resultArea.innerText = "Please select an answer!";
+            feedback.innerHTML = "<p style='color:orange;'>Select an option first!</p>";
             return;
         }
 
-        if (parseInt(selected.value) === currentMCQ.answer) {
-            resultArea.innerHTML = "<span style='color:green;'>✅ Correct!</span>";
+        if (parseInt(selected.value) === currentMCQ.correct) {
+            feedback.innerHTML = `<p class="feedback-correct">✅ Correct! Excellent job.</p>
+                                  <p style="font-size:0.9em; color:#555;">${currentMCQ.exp}</p>`;
         } else {
-            resultArea.innerHTML = "<span style='color:red;'>❌ Wrong. Keep practicing.</span>";
+            const correctText = currentMCQ.options[currentMCQ.correct];
+            feedback.innerHTML = `<p class="feedback-wrong">❌ Incorrect.</p>
+                                  <p style="font-size:0.9em;">The correct answer was: <strong>${correctText}</strong></p>`;
         }
     }
 
     function showTough() {
-        document.getElementById("output").innerHTML = "<p>😈 Tough questions coming soon.</p>";
+        document.getElementById("output").innerHTML = `
+            <div style="text-align:center; color:#e74c3c;">
+                <h3>😈 Tough Mode</h3>
+                <p>Coming in Step 6: Engineering & Science PYQs (Previous Year Questions) with time limits!</p>
+            </div>
+        `;
     }
-    </script>
+</script>
 
 </body>
 </html>
