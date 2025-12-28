@@ -1,125 +1,130 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>PrepSprint 🚀</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <title>PrepSprint 🚀</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { font-family: sans-serif; padding: 20px; line-height: 1.6; }
+        #output { border: 1px solid #ddd; padding: 15px; margin-top: 20px; border-radius: 8px; background: #fefefe; }
+        button { cursor: pointer; padding: 8px 12px; margin-right: 5px; }
+    </style>
 </head>
-
 <body>
 
-<h1>PrepSprint 🚀</h1>
-<p>Smart practice for every college student</p>
+    <h1>PrepSprint 🚀</h1>
+    <p>Smart practice for every college student</p>
 
-<hr>
+    <hr>
 
-<label>Choose Stream:</label>
-<select id="stream">
-  <option>Engineering</option>
-  <option>Science</option>
-  <option>Arts</option>
-  <option>Physical Education</option>
-</select>
+    <label>Choose Stream:</label>
+    <select id="stream">
+        <option>Engineering</option>
+        <option>Science</option>
+        <option>Arts</option>
+        <option>Physical Education</option>
+    </select>
 
-<br><br>
+    <br><br>
 
-<label>Choose Difficulty:</label>
-<select id="level">
-  <option>Basic</option>
-  <option>Medium</option>
-  <option>Hard</option>
-</select>
+    <label>Choose Difficulty:</label>
+    <select id="level">
+        <option value="Basic">Basic</option>
+        <option value="Medium">Medium</option>
+        <option value="Hard">Hard</option>
+    </select>
 
-<br><br>
+    <br><br>
 
-<button onclick="showFlashcard()">Flashcard</button>
-<button onclick="showMCQ()">MCQ</button>
-<button onclick="showTough()">Tough Question</button>
+    <button onclick="showFlashcard()">Flashcard</button>
+    <button onclick="showMCQ()">MCQ</button>
+    <button onclick="showTough()">Tough Question</button>
 
-<hr>
+    <hr>
 
-<div id="output">
-  <p>Your question will appear here.</p>
-</div>
+    <div id="output">
+        <p>Your question will appear here.</p>
+    </div>
 
-<!-- ✅ ALL JAVASCRIPT STARTS HERE -->
-<script>
+    <script>
+    // FLASHCARDS DATA
+    const flashcards = {
+        Basic: [
+            { q: "What is GPA?", a: "Grade Point Average." },
+            { q: "What is active learning?", a: "Learning by doing and practicing." }
+        ],
+        Medium: [
+            { q: "Why is understanding important?", a: "It helps apply concepts." }
+        ],
+        Hard: [
+            { q: "Why do students forget in exams?", a: "Stress and weak recall." }
+        ]
+    };
 
-// FLASHCARDS
-const flashcards = {
-  Basic: [
-    { q: "What is GPA?", a: "Grade Point Average." },
-    { q: "What is active learning?", a: "Learning by doing and practicing." }
-  ],
-  Medium: [
-    { q: "Why is understanding important?", a: "It helps apply concepts." }
-  ],
-  Hard: [
-    { q: "Why do students forget in exams?", a: "Stress and weak recall." }
-  ]
-};
+    // MCQ DATA
+    const mcqs = [
+        {
+            question: "Which method improves memory most?",
+            options: ["Reading", "Highlighting", "Active Recall", "Copying"],
+            answer: 2
+        }
+    ];
 
-function showFlashcard() {
-  const level = document.getElementById("level").value;
-  const card = flashcards[level][Math.floor(Math.random() * flashcards[level].length)];
+    let currentMCQ;
 
-  document.getElementById("output").innerHTML = `
-    <h3>Flashcard (${level})</h3>
-    <p><b>Question:</b> ${card.q}</p>
-    <button onclick="showAnswer('${card.a}')">Show Answer</button>
-  `;
-}
+    function showFlashcard() {
+        const level = document.getElementById("level").value;
+        const levelCards = flashcards[level];
+        const card = levelCards[Math.floor(Math.random() * levelCards.length)];
 
-function showAnswer(ans) {
-  document.getElementById("output").innerHTML += `
-    <p><b>Answer:</b> ${ans}</p>
-    <em>Keep going. You're doing better than you think.</em>
-  `;
-}
+        document.getElementById("output").innerHTML = `
+            <h3>Flashcard (${level})</h3>
+            <p><b>Question:</b> ${card.q}</p>
+            <button onclick="showAnswer('${card.a}')">Show Answer</button>
+        `;
+    }
 
-// MCQs
-const mcqs = [
-  {
-    question: "Which method improves memory most?",
-    options: ["Reading", "Highlighting", "Active Recall", "Copying"],
-    answer: 2
-  }
-];
+    function showAnswer(ans) {
+        document.getElementById("output").innerHTML += `
+            <p><b>Answer:</b> ${ans}</p>
+            <em>Keep going. You're doing better than you think.</em>
+        `;
+    }
 
-let currentMCQ;
+    function showMCQ() {
+        currentMCQ = mcqs[0];
+        document.getElementById("output").innerHTML = `
+            <h3>MCQ</h3>
+            <p>${currentMCQ.question}</p>
+            <label><input type="radio" name="opt" value="0"> ${currentMCQ.options[0]}</label><br>
+            <label><input type="radio" name="opt" value="1"> ${currentMCQ.options[1]}</label><br>
+            <label><input type="radio" name="opt" value="2"> ${currentMCQ.options[2]}</label><br>
+            <label><input type="radio" name="opt" value="3"> ${currentMCQ.options[3]}</label><br><br>
+            <button onclick="submitMCQ()">Submit</button>
+            <p id="result"></p>
+        `;
+    }
 
-function showMCQ() {
-  currentMCQ = mcqs[0];
+    function submitMCQ() {
+        const selected = document.querySelector('input[name="opt"]:checked');
+        const resultArea = document.getElementById("result");
+        
+        if (!selected) {
+            resultArea.innerText = "Please select an answer!";
+            return;
+        }
 
-  document.getElementById("output").innerHTML = `
-    <h3>MCQ</h3>
-    <p>${currentMCQ.question}</p>
+        if (parseInt(selected.value) === currentMCQ.answer) {
+            resultArea.innerHTML = "<span style='color:green;'>✅ Correct!</span>";
+        } else {
+            resultArea.innerHTML = "<span style='color:red;'>❌ Wrong. Keep practicing.</span>";
+        }
+    }
 
-    <label><input type="radio" name="opt" value="0"> ${currentMCQ.options[0]}</label><br>
-    <label><input type="radio" name="opt" value="1"> ${currentMCQ.options[1]}</label><br>
-    <label><input type="radio" name="opt" value="2"> ${currentMCQ.options[2]}</label><br>
-    <label><input type="radio" name="opt" value="3"> ${currentMCQ.options[3]}</label><br><br>
-
-    <button onclick="submitMCQ()">Submit</button>
-    <p id="result"></p>
-  `;
-}
-
-function submitMCQ() {
-  const selected = document.querySelector('input[name="opt"]:checked');
-  document.getElementById("result").innerText =
-    selected && parseInt(selected.value) === currentMCQ.answer
-    ? "✅ Correct!"
-    : "❌ Wrong. Keep practicing.";
-}
-
-function showTough() {
-  document.getElementById("output").innerHTML =
-    "<p>😈 Tough questions coming soon.</p>";
-}
-
-</script>
-<!-- ✅ JAVASCRIPT ENDS HERE -->
+    function showTough() {
+        document.getElementById("output").innerHTML = "<p>😈 Tough questions coming soon.</p>";
+    }
+    </script>
 
 </body>
 </html>
