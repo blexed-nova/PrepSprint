@@ -1,93 +1,118 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>PrepSprint - Smart Exam Practice</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <title>PrepSprint - Smart Exam Practice</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
-<div class="card">
-  <h2>MCQ</h2>
-  <p id="mcqQuestion">Question will appear here</p>
 
-  <form id="mcqForm">
-    <label><input type="radio" name="option" value="0"> <span id="opt0"></span></label><br>
-    <label><input type="radio" name="option" value="1"> <span id="opt1"></span></label><br>
-    <label><input type="radio" name="option" value="2"> <span id="opt2"></span></label><br>
-    <label><input type="radio" name="option" value="3"> <span id="opt3"></span></label><br>
-  </form>
+<h1>PrepSprint 🚀</h1>
+<p>Smart practice for every college student</p>
 
-  <button onclick="submitMCQ()">Submit</button>
+<hr>
 
-  <p id="mcqResult"></p>
+<label>Choose Stream:</label>
+<select id="stream">
+  <option>Engineering</option>
+  <option>Science</option>
+  <option>Arts</option>
+  <option>Physical Education</option>
+  <option>Other</option>
+</select>
+
+<br><br>
+
+<label>Choose Difficulty:</label>
+<select id="level">
+  <option>Basic</option>
+  <option>Medium</option>
+  <option>Hard</option>
+</select>
+
+<br><br>
+
+<button onclick="showFlashcard()">Flashcard</button>
+<button onclick="showMCQ()">MCQ</button>
+<button onclick="showTough()">Tough Question</button>
+
+<hr>
+
+<div id="output">
+  <p>Your question will appear here.</p>
 </div>
 
-    <h1>PrepSprint 🚀</h1>
-    <p>Smart practice for every college student</p>
+<script>
+// ---------- FLASHCARDS ----------
+const flashcards = {
+  Basic: [
+    { q: "What is GPA?", a: "GPA stands for Grade Point Average." },
+    { q: "What is active learning?", a: "Learning by doing, questioning, and practicing." }
+  ],
+  Medium: [
+    { q: "Why is understanding better than memorization?", a: "It allows application in new problems." }
+  ],
+  Hard: [
+    { q: "Why do students forget in exams?", a: "Stress and weak recall practice." }
+  ]
+};
 
-    <hr>
+function showFlashcard() {
+  const level = document.getElementById("level").value;
+  const card = flashcards[level][Math.floor(Math.random() * flashcards[level].length)];
 
-    <!-- Selection Area -->
-    <label>Choose Stream:</label>
-    <select id="stream">
-        <option>Engineering</option>
-        <option>Science</option>
-        <option>Arts</option>
-        <option>Physical Education</option>
-        <option>Other</option>
-    </select>
+  document.getElementById("output").innerHTML = `
+    <h3>Flashcard (${level})</h3>
+    <p><strong>Question:</strong> ${card.q}</p>
+    <button onclick="showAnswer('${card.a}')">Show Answer</button>
+  `;
+}
 
-    <br><br>
+function showAnswer(ans) {
+  document.getElementById("output").innerHTML += `
+    <p><strong>Answer:</strong> ${ans}</p>
+    <em>Keep going. You're doing better than you think.</em>
+  `;
+}
 
-    <label>Choose Difficulty:</label>
-    <select id="level">
-        <option>Basic</option>
-        <option>Medium</option>
-        <option>Hard</option>
-    </select>
-
-    <br><br>
-
-    <!-- Action Buttons -->
-    <button onclick="showFlashcard()">Flashcard</button>
-    <button onclick="showMCQ()">MCQ</button>
-    <button onclick="showTough()">Tough Question</button>
-
-    <hr>
-
-    <!-- Output Area -->
-    <div id="output">
-        <p>Your question will appear here.</p>
-    </div>
-
-    <!-- JavaScript goes here -->
-      <script>
-          <script>
+// ---------- MCQs ----------
 const mcqs = [
   {
     question: "Which technique improves long-term memory the most?",
     options: ["Reading", "Highlighting", "Active Recall", "Rewriting"],
     answer: 2,
-    explanation: "Active recall forces your brain to retrieve information, strengthening memory."
+    explanation: "Active recall strengthens memory by retrieval."
   },
   {
-    question: "What is the best way to understand a concept?",
-    options: ["Memorizing", "Teaching someone else", "Reading once", "Skipping hard parts"],
+    question: "Best way to understand a concept?",
+    options: ["Memorizing", "Teaching others", "Reading once", "Skipping hard parts"],
     answer: 1,
-    explanation: "Teaching reveals gaps in understanding and reinforces learning."
+    explanation: "Teaching exposes gaps and reinforces learning."
   }
 ];
 
-let currentMCQ = mcqs[Math.floor(Math.random() * mcqs.length)];
+let currentMCQ;
 
-document.getElementById("mcqQuestion").innerText = currentMCQ.question;
-currentMCQ.options.forEach((opt, i) => {
-  document.getElementById("opt" + i).innerText = opt;
-});
+function showMCQ() {
+  currentMCQ = mcqs[Math.floor(Math.random() * mcqs.length)];
+
+  document.getElementById("output").innerHTML = `
+    <h3>MCQ</h3>
+    <p>${currentMCQ.question}</p>
+
+    <label><input type="radio" name="opt" value="0"> ${currentMCQ.options[0]}</label><br>
+    <label><input type="radio" name="opt" value="1"> ${currentMCQ.options[1]}</label><br>
+    <label><input type="radio" name="opt" value="2"> ${currentMCQ.options[2]}</label><br>
+    <label><input type="radio" name="opt" value="3"> ${currentMCQ.options[3]}</label><br><br>
+
+    <button onclick="submitMCQ()">Submit</button>
+    <p id="result"></p>
+  `;
+}
 
 function submitMCQ() {
-  const selected = document.querySelector('input[name="option"]:checked');
-  const result = document.getElementById("mcqResult");
+  const selected = document.querySelector('input[name="opt"]:checked');
+  const result = document.getElementById("result");
 
   if (!selected) {
     result.innerText = "Please select an option.";
@@ -96,7 +121,7 @@ function submitMCQ() {
 
   if (parseInt(selected.value) === currentMCQ.answer) {
     result.innerHTML = "✅ Correct!<br>" + currentMCQ.explanation +
-      "<br><strong>Keep pushing. You're ahead of most.</strong>";
+      "<br><strong>You're ahead of most.</strong>";
   } else {
     result.innerHTML = "❌ Wrong.<br>Correct Answer: " +
       currentMCQ.options[currentMCQ.answer] +
@@ -104,49 +129,13 @@ function submitMCQ() {
       "<br><strong>Failure is feedback.</strong>";
   }
 }
+
+// ---------- TOUGH ----------
+function showTough() {
+  document.getElementById("output").innerHTML =
+    "<p>😈 Tough questions coming soon. This will separate toppers.</p>";
+}
 </script>
 
-    const flashcards = {
-        Basic: [
-            { q: "What is the meaning of GPA?", a: "GPA stands for Grade Point Average." },
-            { q: "What is active learning?", a: "Learning by doing, questioning, and practicing." }
-        ],
-        Medium: [
-            { q: "Why is understanding better than memorization?", a: "Because understanding helps apply concepts in new questions." }
-        ],
-        Hard: [
-            { q: "Why do students forget during exams?", a: "Due to stress, poor revision, and weak recall practice." }
-        ]
-    };
-
-    function showFlashcard() {
-        const level = document.getElementById("level").value;
-        const cards = flashcards[level];
-        const card = cards[Math.floor(Math.random() * cards.length)];
-
-        document.getElementById("output").innerHTML = `
-            <h3>Flashcard (${level})</h3>
-            <p><strong>Question:</strong> ${card.q}</p>
-            <button onclick="showAnswer('${card.a}')">Show Answer</button>
-        `;
-    }
-
-    function showAnswer(answer) {
-        document.getElementById("output").innerHTML += `
-            <p><strong>Answer:</strong> ${answer}</p>
-            <p><em>Keep going. You're doing better than you think.</em></p>
-        `;
-    }
-
-    function showMCQ() {
-        document.getElementById("output").innerHTML =
-            "<p>MCQs coming next step 🚧</p>";
-    }
-
-    function showTough() {
-        document.getElementById("output").innerHTML =
-            "<p>Tough questions coming next step 😈</p>";
-    }
-</script>
 </body>
 </html>
