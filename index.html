@@ -61,14 +61,46 @@
         ]
     };
 
-    // MCQ DATA
-    const mcqs = [
-        {
-            question: "Which method improves memory most?",
-            options: ["Reading", "Highlighting", "Active Recall", "Copying"],
-            answer: 2
-        }
-    ];
+    // MCQs DATABASE
+const mcqs = [
+  {
+    question: "Which technique improves long-term memory the most?",
+    options: ["Reading", "Highlighting", "Active Recall", "Rewriting"],
+    answer: 2
+  },
+  {
+    question: "In the 'Feynman Technique', what is the best way to learn?",
+    options: ["Listen to music", "Teach it to a child", "Read faster", "Sleep more"],
+    answer: 1
+  },
+  {
+    question: "What does 'Spaced Repetition' prevent?",
+    options: ["High Grades", "The Forgetting Curve", "Hunger", "Fast Reading"],
+    answer: 1
+  },
+  {
+    question: "Which is a 'Deep Work' habit?",
+    options: ["Checking Email", "Multitasking", "Zero Distractions", "Group Chatting"],
+    answer: 2
+  }
+];
+
+// Updated showMCQ to pick a RANDOM question
+function showMCQ() {
+  // This line picks a random question from the list above
+  currentMCQ = mcqs[Math.floor(Math.random() * mcqs.length)];
+
+  document.getElementById("output").innerHTML = `
+    <h3>MCQ</h3>
+    <p>${currentMCQ.question}</p>
+    <label><input type="radio" name="opt" value="0"> ${currentMCQ.options[0]}</label><br>
+    <label><input type="radio" name="opt" value="1"> ${currentMCQ.options[1]}</label><br>
+    <label><input type="radio" name="opt" value="2"> ${currentMCQ.options[2]}</label><br>
+    <label><input type="radio" name="opt" value="3"> ${currentMCQ.options[3]}</label><br><br>
+    <button onclick="submitMCQ()">Submit</button>
+    <p id="result"></p>
+  `;
+}
 
     let currentMCQ;
 
