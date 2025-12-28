@@ -2,32 +2,27 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>PrepSprint 🚀 - Engineering & Applied Sciences</title>
+    <title>PrepSprint 🚀 - Engineering Excellence</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         :root { --primary: #1877f2; --bg: #f0f2f5; --text: #1c1e21; --success: #2ecc71; --danger: #e74c3c; }
         body { font-family: 'Segoe UI', Arial, sans-serif; padding: 20px; line-height: 1.6; background-color: var(--bg); color: var(--text); max-width: 850px; margin: auto; }
         .container { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); position: relative; }
-        h1 { color: var(--primary); margin-bottom: 5px; text-align: center; }
-        .tagline { color: #606770; margin-bottom: 30px; text-align: center; font-weight: 500; }
-        
-        #scoreBoard { position: absolute; top: 20px; right: 20px; background: var(--primary); color: white; padding: 8px 15px; border-radius: 20px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
-        
+        h1 { color: var(--primary); text-align: center; margin-bottom: 5px; }
+        .tagline { color: #606770; text-align: center; margin-bottom: 30px; }
+        #scoreBoard { position: absolute; top: 20px; right: 20px; background: var(--primary); color: white; padding: 8px 15px; border-radius: 20px; font-weight: bold; }
         .controls { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 25px; }
         .control-group { display: flex; flex-direction: column; }
-        label { font-weight: bold; font-size: 0.85em; margin-bottom: 8px; color: var(--primary); text-transform: uppercase; }
-        select { padding: 12px; border-radius: 10px; border: 1.5px solid #ddd; outline: none; background: #fff; }
-
-        .actions { display: flex; justify-content: center; gap: 15px; margin-bottom: 30px; flex-wrap: wrap; }
-        button { cursor: pointer; padding: 12px 22px; border: none; border-radius: 10px; background-color: var(--primary); color: white; font-weight: 600; transition: 0.3s; }
-        button:hover { background-color: #1166d8; transform: translateY(-2px); }
-        
-        #output { min-height: 220px; border: 2px dashed #cbd5e0; padding: 30px; border-radius: 15px; background: #fafbfc; position: relative; transition: 0.3s; }
-        .card-header { font-size: 0.8em; font-weight: bold; color: var(--primary); margin-bottom: 15px; display: block; border-bottom: 1px solid #eee; padding-bottom: 5px; }
-        .answer-box { margin-top: 20px; padding: 15px; background: #e7f3ff; border-radius: 10px; border-left: 6px solid var(--primary); }
+        label { font-weight: bold; font-size: 0.8em; color: var(--primary); margin-bottom: 5px; }
+        select { padding: 12px; border-radius: 10px; border: 1.5px solid #ddd; outline: none; }
+        .actions { display: flex; justify-content: center; gap: 10px; margin-bottom: 30px; flex-wrap: wrap; }
+        button { cursor: pointer; padding: 12px 20px; border: none; border-radius: 10px; background-color: var(--primary); color: white; font-weight: 600; transition: 0.2s; }
+        button:hover { background-color: #1166d8; }
+        #output { min-height: 220px; border: 2px dashed #cbd5e0; padding: 30px; border-radius: 15px; background: #fafbfc; }
+        .card-header { font-size: 0.8em; font-weight: bold; color: var(--primary); margin-bottom: 15px; display: block; }
+        .answer-box { margin-top: 15px; padding: 15px; background: #e7f3ff; border-radius: 10px; border-left: 6px solid var(--primary); }
         .mcq-option { display: block; background: white; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 8px; cursor: pointer; }
-        .mcq-option:hover { border-color: var(--primary); background: #f0f7ff; }
-        #timerDisplay { font-size: 1.5em; font-weight: bold; color: var(--danger); }
+        .mcq-option:hover { border-color: var(--primary); }
     </style>
 </head>
 <body>
@@ -35,24 +30,21 @@
 <div class="container">
     <div id="scoreBoard">🏆 Score: 0</div>
     <h1>PrepSprint 🚀</h1>
-    <p class="tagline">The Engineering Student's Exam Secret Weapon</p>
+    <p class="tagline">Engineering Student's Exam Secret Weapon</p>
 
     <div class="controls">
         <div class="control-group">
-            <label>Select Subject</label>
+            <label>SUBJECT</label>
             <select id="subject">
                 <option value="maths">Engineering Maths</option>
                 <option value="physics">Applied Physics</option>
-                <option value="chemistry">Engineering Chemistry</option>
                 <option value="electronics">Basic Electronics</option>
                 <option value="electrical">Electrical Engineering</option>
                 <option value="mechanical">Mechanical Engineering</option>
-                <option value="evs">Environmental Science</option>
-                <option value="comm">Communication Skills</option>
             </select>
         </div>
         <div class="control-group">
-            <label>Difficulty</label>
+            <label>DIFFICULTY</label>
             <select id="level">
                 <option value="Basic">Basic</option>
                 <option value="Medium">Medium</option>
@@ -68,46 +60,41 @@
     </div>
 
     <div id="output">
-        <p style="text-align:center; color:#a0aec0; font-style: italic;">Ready to sprint? Pick a subject and hit a mode!</p>
+        <p style="text-align:center; color:#888;">Pick a subject and start your sprint!</p>
     </div>
 </div>
 
 <script>
     const db = {
         maths: {
-            Basic: { q: "What is the derivative of e^x?", a: "e^x" },
-            Medium: { q: "What is an Identity Matrix?", a: "A square matrix with 1s on diagonal, 0s elsewhere." },
-            Hard: { q: "Condition for a vector to be Solenoidal?", a: "The divergence must be zero (∇·V = 0)." },
+            Basic: [{q: "Derivative of sin(x)?", a: "cos(x)"}, {q: "Derivative of e^x?", a: "e^x"}],
+            Medium: [{q: "Integral of 1/x?", a: "log(x)"}],
+            Hard: [{q: "Condition for Solenoidal vector?", a: "∇·V = 0"}],
             mcqs: [
                 { q: "Value of log(1)?", options: ["1", "e", "0", "10"], correct: 2 },
-                { q: "Derivative of tan(x)?", options: ["sec(x)", "sec²(x)", "cos(x)", "sin(x)"], correct: 1 }
+                { q: "Derivative of tan(x)?", options: ["sec(x)", "sec²(x)", "cos(x)", "sin(x)"], correct: 1 },
+                { q: "What is i²?", options: ["1", "-1", "0", "i"], correct: 1 }
             ]
         },
         physics: {
-            Basic: { q: "SI unit of Luminous Intensity?", a: "Candela (cd)." },
-            Medium: { q: "Explain Hooke's Law.", a: "Stress is proportional to strain (σ = Eε)." },
-            Hard: { q: "What is Brewster's Angle?", a: "The angle of incidence where light is perfectly polarized." },
+            Basic: [{q: "SI unit of Force?", a: "Newton (N)"}, {q: "SI unit of Power?", a: "Watt (W)"}],
+            Medium: [{q: "Hooke's Law formula?", a: "F = kx"}],
+            Hard: [{q: "What is Brewster's Angle?", a: "Angle for perfect polarization."}],
             mcqs: [
-                { q: "Which is a vector quantity?", options: ["Mass", "Time", "Force", "Length"], correct: 2 }
+                { q: "Which is a vector?", options: ["Mass", "Time", "Force", "Length"], correct: 2 },
+                { q: "Unit of Energy?", options: ["Newton", "Joule", "Watt", "Volt"], correct: 1 },
+                { q: "Velocity of light (m/s)?", options: ["3x10^8", "3x10^5", "1100", "Infinite"], correct: 0 }
             ]
         },
         electronics: {
-            Basic: { q: "What is KVL?", a: "Kirchhoff's Voltage Law: Sum of voltages in a loop is zero." },
-            Medium: { q: "Function of a Rectifier?", a: "Converts AC (Alternating Current) to DC (Direct Current)." },
-            Hard: { q: "Define Alpha (α) in BJT.", a: "The ratio of Collector current to Emitter current (Ic/Ie)." },
+            Basic: [{q: "Full form of KVL?", a: "Kirchhoff's Voltage Law"}],
+            Medium: [{q: "What converts AC to DC?", a: "Rectifier"}],
+            Hard: [{q: "What is BJT Alpha?", a: "Ic / Ie"}],
             mcqs: [
-                { q: "Majority carriers in N-type semiconductor?", options: ["Holes", "Protons", "Electrons", "Neutrons"], correct: 2 }
-            ]
-        },
-        electrical: {
-            Basic: { q: "Unit of Conductance?", a: "Siemens (S)." },
-            Medium: { q: "State Lenz's Law.", a: "Induced current opposes the change in magnetic flux." },
-            Hard: { q: "What is Power Factor?", a: "Ratio of Real Power to Apparent Power (cos φ)." },
-            mcqs: [
-                { q: "Unit of Magnetic Flux?", options: ["Tesla", "Weber", "Henry", "Farad"], correct: 1 }
+                { q: "Majority carriers in N-type?", options: ["Holes", "Protons", "Electrons", "Neutrons"], correct: 2 },
+                { q: "A diode conducts in:", options: ["Forward Bias", "Reverse Bias", "Both", "None"], correct: 0 }
             ]
         }
-        // ... (Add others following same format)
     };
 
     let score = 0;
@@ -123,11 +110,13 @@
         clearInterval(timerId);
         const sub = document.getElementById("subject").value;
         const lvl = document.getElementById("level").value;
-        const data = db[sub][lvl];
+        const pool = db[sub][lvl];
+        const card = pool[Math.floor(Math.random() * pool.length)];
+
         document.getElementById("output").innerHTML = `
-            <span class="card-header">${sub.toUpperCase()} | ${lvl.toUpperCase()}</span>
-            <h2>${data.q}</h2>
-            <button onclick="showAns('${data.a}')">View Solution</button>
+            <span class="card-header">${sub.toUpperCase()} FLASHCARD</span>
+            <h2>${card.q}</h2>
+            <button onclick="showAns('${card.a}')">View Solution</button>
         `;
     }
 
@@ -142,17 +131,19 @@
         clearInterval(timerId);
         const sub = document.getElementById("subject").value;
         const pool = db[sub].mcqs;
+        // This line makes it RANDOM every time you click
         currentMCQ = pool[Math.floor(Math.random() * pool.length)];
         
         let opts = "";
         currentMCQ.options.forEach((o, i) => {
             opts += `<label class="mcq-option"><input type="radio" name="mcq" value="${i}"> ${o}</label>`;
         });
+
         document.getElementById("output").innerHTML = `
             <span class="card-header">${sub.toUpperCase()} MCQ</span>
-            <p style="font-size: 1.1em; font-weight:500;">${currentMCQ.q}</p>
+            <p style="font-weight:500;">${currentMCQ.q}</p>
             <div>${opts}</div>
-            <button onclick="submitMCQ()">Submit</button>
+            <button id="submitBtn" onclick="submitMCQ()">Submit</button>
             <div id="feedback"></div>
         `;
     }
@@ -160,12 +151,15 @@
     function submitMCQ() {
         const sel = document.querySelector('input[name="mcq"]:checked');
         const f = document.getElementById("feedback");
-        if (!sel) return;
+        const btn = document.getElementById("submitBtn");
+        if (!sel || btn.disabled) return;
+
+        btn.disabled = true; // Prevent double scoring
         if (parseInt(sel.value) === currentMCQ.correct) {
             f.innerHTML = "<p style='color:var(--success); font-weight:bold;'>✅ Correct! +10 Points</p>";
             updatePoints(10);
         } else {
-            f.innerHTML = `<p style='color:var(--danger);'>❌ Incorrect. Correct: ${currentMCQ.options[currentMCQ.correct]}</p>`;
+            f.innerHTML = `<p style='color:var(--danger);'>❌ Wrong. Correct: ${currentMCQ.options[currentMCQ.correct]}</p>`;
         }
     }
 
@@ -174,12 +168,13 @@
         let timeLeft = 30;
         document.getElementById("output").innerHTML = `
             <div style="text-align:center;">
-                <span class="card-header" style="color:var(--danger);">TOUGH MODE</span>
+                <span class="card-header" style="color:var(--danger);">TOUGH MODE (30s)</span>
                 <h2 id="timerDisplay">Time: 30s</h2>
-                <p><strong>Problem:</strong> Calculate resistance (R) if Voltage (V) = 240V and Current (I) = 2A.</p>
-                <input type="number" id="ansIn" style="padding:10px; width:100px; border-radius:8px; border:1px solid #ccc;" placeholder="Ω">
-                <button onclick="checkTough(120)">Submit Answer</button>
-                <p id="tFeedback" style="margin-top:10px; font-weight:bold;"></p>
+                <p><strong>Physics:</strong> Find acceleration if Force=100N and Mass=4kg.</p>
+                
+                <input type="number" id="ansIn" style="padding:10px; width:100px; border-radius:8px; border:1px solid #ccc;">
+                <button onclick="checkTough(25)">Submit</button>
+                <p id="tFeedback"></p>
             </div>
         `;
 
@@ -188,7 +183,7 @@
             document.getElementById("timerDisplay").innerText = `Time: ${timeLeft}s`;
             if (timeLeft <= 0) {
                 clearInterval(timerId);
-                document.getElementById("output").innerHTML = `<h2 style="color:var(--danger);">⌛ Time's Up!</h2><button onclick="showTough()">Try Again</button>`;
+                document.getElementById("output").innerHTML = `<h2 style="color:var(--danger);">⌛ Time's Up!</h2><button onclick="showTough()">Retry</button>`;
             }
         }, 1000);
     }
@@ -198,11 +193,11 @@
         const f = document.getElementById("tFeedback");
         if (parseInt(val) === corr) {
             clearInterval(timerId);
-            f.innerHTML = "✅ MASTER! R = V/I = 240/2 = 120Ω. +50 Points!";
+            f.innerHTML = "✅ CORRECT! 100/4 = 25m/s². +50 Points!";
             f.style.color = "var(--success)";
             updatePoints(50);
         } else {
-            f.innerHTML = "❌ Wrong. Use Ohm's Law formula.";
+            f.innerHTML = "❌ Try again. a = F / m";
             f.style.color = "var(--danger)";
         }
     }
