@@ -6,6 +6,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
+<div class="card">
+  <h2>MCQ</h2>
+  <p id="mcqQuestion">Question will appear here</p>
+
+  <form id="mcqForm">
+    <label><input type="radio" name="option" value="0"> <span id="opt0"></span></label><br>
+    <label><input type="radio" name="option" value="1"> <span id="opt1"></span></label><br>
+    <label><input type="radio" name="option" value="2"> <span id="opt2"></span></label><br>
+    <label><input type="radio" name="option" value="3"> <span id="opt3"></span></label><br>
+  </form>
+
+  <button onclick="submitMCQ()">Submit</button>
+
+  <p id="mcqResult"></p>
+</div>
 
     <h1>PrepSprint 🚀</h1>
     <p>Smart practice for every college student</p>
@@ -47,6 +62,50 @@
 
     <!-- JavaScript goes here -->
       <script>
+          <script>
+const mcqs = [
+  {
+    question: "Which technique improves long-term memory the most?",
+    options: ["Reading", "Highlighting", "Active Recall", "Rewriting"],
+    answer: 2,
+    explanation: "Active recall forces your brain to retrieve information, strengthening memory."
+  },
+  {
+    question: "What is the best way to understand a concept?",
+    options: ["Memorizing", "Teaching someone else", "Reading once", "Skipping hard parts"],
+    answer: 1,
+    explanation: "Teaching reveals gaps in understanding and reinforces learning."
+  }
+];
+
+let currentMCQ = mcqs[Math.floor(Math.random() * mcqs.length)];
+
+document.getElementById("mcqQuestion").innerText = currentMCQ.question;
+currentMCQ.options.forEach((opt, i) => {
+  document.getElementById("opt" + i).innerText = opt;
+});
+
+function submitMCQ() {
+  const selected = document.querySelector('input[name="option"]:checked');
+  const result = document.getElementById("mcqResult");
+
+  if (!selected) {
+    result.innerText = "Please select an option.";
+    return;
+  }
+
+  if (parseInt(selected.value) === currentMCQ.answer) {
+    result.innerHTML = "✅ Correct!<br>" + currentMCQ.explanation +
+      "<br><strong>Keep pushing. You're ahead of most.</strong>";
+  } else {
+    result.innerHTML = "❌ Wrong.<br>Correct Answer: " +
+      currentMCQ.options[currentMCQ.answer] +
+      "<br>" + currentMCQ.explanation +
+      "<br><strong>Failure is feedback.</strong>";
+  }
+}
+</script>
+
     const flashcards = {
         Basic: [
             { q: "What is the meaning of GPA?", a: "GPA stands for Grade Point Average." },
