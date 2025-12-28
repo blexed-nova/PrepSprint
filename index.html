@@ -66,8 +66,7 @@
         <p style="text-align:center; color:#a0aec0; font-style: italic;">Choose your subject and difficulty to begin your sprint.</p>
     </div>
 </div>
-
-<script>
+// --- DATABASE (Same as before) ---
     const db = {
         maths: {
             Basic: { q: "What is the derivative of e^x?", a: "The derivative of e^x is always e^x." },
@@ -119,9 +118,22 @@
         }
     };
 
+    // --- TRACKING VARIABLES ---
     let currentMCQ = null;
+    let score = 0;
+    let timeLeft = 30;
+    let timerId = null;
+
+    function updateScoreDisplay() {
+        const out = document.getElementById("output");
+        const scoreDiv = document.createElement("div");
+        scoreDiv.style = "position:absolute; top:10px; right:20px; font-weight:bold; color:#1877f2;";
+        scoreDiv.innerHTML = `🏆 Score: ${score}`;
+        out.appendChild(scoreDiv);
+    }
 
     function showFlashcard() {
+        clearInterval(timerId); // Stop any timer
         const sub = document.getElementById("subject").value;
         const lvl = document.getElementById("level").value;
         const data = db[sub][lvl];
@@ -130,6 +142,7 @@
             <h2>${data.q}</h2>
             <button onclick="showAns('${data.a}')">View Solution</button>
         `;
+        updateScoreDisplay();
     }
 
     function showAns(ans) {
@@ -139,6 +152,7 @@
     }
 
     function showMCQ() {
+        clearInterval(timerId);
         const sub = document.getElementById("subject").value;
         currentMCQ = db[sub].mcqs[0];
         let opts = "";
@@ -152,6 +166,7 @@
             <button onclick="submitMCQ()">Submit</button>
             <div id="feedback"></div>
         `;
+        updateScoreDisplay();
     }
 
     function submitMCQ() {
@@ -159,29 +174,53 @@
         const f = document.getElementById("feedback");
         if (!sel) return;
         if (parseInt(sel.value) === currentMCQ.correct) {
-            f.innerHTML = "<p style='color:green;'>✅ Correct!</p>";
+            score += 10;
+            f.innerHTML = "<p style='color:green;'>✅ Correct! +10 Points</p>";
         } else {
             f.innerHTML = `<p style='color:red;'>❌ Wrong. Correct: ${currentMCQ.options[currentMCQ.correct]}</p>`;
         }
+        updateScoreDisplay();
     }
 
     function showTough() {
+        clearInterval(timerId);
+        timeLeft = 30;
         document.getElementById("output").innerHTML = `
             <div style="text-align:center;">
-                <span class="card-header" style="color:#e74c3c;">TOUGH MODE</span>
+                <span class="card-header" style="color:#e74c3c;">TOUGH MODE (30s)</span>
+                <h2 id="timerDisplay" style="color:#e74c3c;">Time: 30s</h2>
                 <p>Electrical: Find Resistance if V=240V and I=2A.</p>
                 <input type="number" id="ansIn" style="padding:10px; width:80px;" placeholder="Ohms">
-                <button onclick="check(120)">Check</button>
+                <button onclick="checkTough(120)">Check</button>
                 <p id="fdb"></p>
             </div>
         `;
+        updateScoreDisplay();
+        
+        timerId = setInterval(() => {
+            timeLeft--;
+            document.getElementById("timerDisplay").innerText = `Time: ${timeLeft}s`;
+            if (timeLeft <= 0) {
+                clearInterval(timerId);
+                document.getElementById("output").innerHTML = `<h2 style="color:red; text-align:center;">⌛ Time's Up!</h2><button onclick="showTough()">Try Again</button>`;
+            }
+        }, 1000);
     }
 
-    function check(corr) {
+    function checkTough(corr) {
         const val = document.getElementById("ansIn").value;
-        document.getElementById("fdb").innerHTML = parseInt(val) === corr ? "✅ Legend!" : "❌ Try again (V/I)";
+        const f = document.getElementById("fdb");
+        if (parseInt(val) === corr) {
+            clearInterval(timerId);
+            score += 50;
+            f.innerHTML = "✅ Legend! +50 Points!";
+            f.style.color = "#2ecc71";
+        } else {
+            f.innerHTML = "❌ Try again (V/I)";
+            f.style.color = "#e74c3c";
+        }
+        updateScoreDisplay();
     }
 </script>
-
 </body>
 </html>
