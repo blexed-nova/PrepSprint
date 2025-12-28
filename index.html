@@ -47,18 +47,49 @@
 
     <!-- JavaScript goes here -->
     <script>
-        function showFlashcard() {
-            document.getElementById("output").innerHTML = "Flashcard coming soon...";
-        }
+        <script>
+    const flashcards = {
+        Basic: [
+            { q: "What is the meaning of GPA?", a: "GPA stands for Grade Point Average. It represents your academic performance." },
+            { q: "What is active learning?", a: "Active learning involves engaging with the material through questions, practice, and discussion." },
+            { q: "Why is revision important?", a: "Revision helps strengthen memory and improves exam performance." }
+        ],
+        Medium: [
+            { q: "Why is understanding concepts better than memorization?", a: "Understanding allows you to apply knowledge to new and unseen questions." },
+            { q: "How does spaced repetition help in studying?", a: "It improves long-term retention by revisiting topics at increasing intervals." }
+        ],
+        Hard: [
+            { q: "Why do students forget studied topics during exams?", a: "Due to stress, lack of revision, and poor recall practice." },
+            { q: "How can active recall outperform rereading notes?", a: "It forces the brain to retrieve information, strengthening memory connections." }
+        ]
+    };
 
-        function showMCQ() {
-            document.getElementById("output").innerHTML = "MCQ coming soon...";
-        }
+    function showFlashcard() {
+        const level = document.getElementById("level").value;
+        const cards = flashcards[level];
+        const randomCard = cards[Math.floor(Math.random() * cards.length)];
 
-        function showTough() {
-            document.getElementById("output").innerHTML = "Tough question coming soon...";
-        }
-    </script>
+        document.getElementById("output").innerHTML = `
+            <h3>Flashcard (${level})</h3>
+            <p><strong>Question:</strong> ${randomCard.q}</p>
+            <button onclick="showAnswer('${randomCard.a}')">Show Answer</button>
+        `;
+    }
 
+    function showAnswer(answer) {
+        document.getElementById("output").innerHTML += `
+            <p><strong>Answer:</strong> ${answer}</p>
+            <p><em>Keep going. You're learning faster than you think.</em></p>
+        `;
+    }
+
+    function showMCQ() {
+        document.getElementById("output").innerHTML = "MCQs coming next step...";
+    }
+
+    function showTough() {
+        document.getElementById("output").innerHTML = "Tough questions coming next step...";
+    }
+</script>
 </body>
 </html>
